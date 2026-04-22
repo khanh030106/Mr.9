@@ -17,6 +17,30 @@ import com.example.backend.entities.Book;
 
 public interface BookRepository extends JpaRepository<Book, Long> {
 
+    // --- ADMIN BOOK MANAGEMENT START: helpers for admin CRUD/list APIs ---
+    Optional<Book> findTopByOrderByIdDesc();
+
+    @Query("""
+        SELECT DISTINCT b
+        FROM Book b
+        LEFT JOIN b.bookCategories bc
+        LEFT JOIN bc.categoryID c
+        LEFT JOIN b.bookAuthors ba
+        LEFT JOIN ba.authorID a
+        WHERE (:keyword IS NULL OR LOWER(b.title) LIKE LOWER(CONCAT('%', :keyword, '%')))
+          AND (:categoryId IS NULL OR c.id = :categoryId)
+          AND (:authorId IS NULL OR a.id = :authorId)
+          AND (COALESCE(:includeDeleted, false) = true OR COALESCE(b.isDeleted, false) = false)
+    """)
+    Page<Book> findAdminBooks(
+            @Param("keyword") String keyword,
+            @Param("categoryId") Long categoryId,
+            @Param("authorId") Long authorId,
+            @Param("includeDeleted") Boolean includeDeleted,
+            Pageable pageable
+    );
+    // --- ADMIN BOOK MANAGEMENT END: helpers for admin CRUD/list APIs ---
+
 
 
     @Query("""
