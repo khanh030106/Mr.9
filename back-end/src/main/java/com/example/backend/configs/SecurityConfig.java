@@ -66,6 +66,11 @@ public class SecurityConfig {
                                 "/userImages/**")
                         .permitAll()
 
+                        // --- ADMIN SECURITY START: force ADMIN role on every /api/admin/** endpoint ---
+                        .requestMatchers("/api/admin/**")
+                        .hasAnyAuthority("ROLE_ADMIN", "ADMIN")
+                        // --- ADMIN SECURITY END: force ADMIN role on every /api/admin/** endpoint ---
+
                         .requestMatchers("/api/auth/me",
                                 "/api/cart/**",
                                 "/cart",
