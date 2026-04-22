@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.example.backend.dto.requests.admin.AdminCategoryUpsertRequest;
+import com.example.backend.dto.responseModel.admin.AdminCategoryOptionsResponse;
 import com.example.backend.dto.responseModel.admin.AdminCategoryPageResponse;
 import com.example.backend.dto.responseModel.admin.AdminCategoryResponse;
 import com.example.backend.entities.Category;
@@ -31,7 +32,7 @@ public class AdminCategoryManagementService {
         if (category.getIsDeleted() == null) {
             category.setIsDeleted(false);
         }
-        Category saved = categoriesRepository.save(category);
+        Category saved = categoriesRepository.saveAndFlush(category);
         return toResponse(saved);
     }
 
@@ -39,7 +40,7 @@ public class AdminCategoryManagementService {
     public AdminCategoryResponse updateCategory(Long categoryId, AdminCategoryUpsertRequest request) {
         Category category = getCategoryOrThrow(categoryId);
         applyCommonFields(category, request, categoryId);
-        Category saved = categoriesRepository.save(category);
+        Category saved = categoriesRepository.saveAndFlush(category);
         return toResponse(saved);
     }
 
@@ -49,8 +50,17 @@ public class AdminCategoryManagementService {
         if (Boolean.TRUE.equals(category.getIsDeleted())) {
             return;
         }
+
+        long totalBooks = categoriesRepository.countNonDeletedBooksByCategoryId(categoryId);
+        if (totalBooks > 0) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Cannot delete category while it still has books"
+            );
+        }
+
         category.setIsDeleted(true);
-        categoriesRepository.save(category);
+        categoriesRepository.saveAndFlush(category);
     }
 
     @Transactional(readOnly = true)
@@ -76,6 +86,18 @@ public class AdminCategoryManagementService {
         );
     }
 
+    @Transactional(readOnly = true)
+    public AdminCategoryOptionsResponse getCategoryOptions() {
+        return new AdminCategoryOptionsResponse(
+                categoriesRepository.findAllActiveOrderByName().stream()
+                        .map(category -> new AdminCategoryOptionsResponse.OptionItem(
+                                category.getId(),
+                                category.getCategoryName()
+                        ))
+                        .toList()
+        );
+    }
+
     private Category getCategoryOrThrow(Long categoryId) {
         return categoriesRepository.findById(categoryId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found"));
@@ -86,6 +108,12 @@ public class AdminCategoryManagementService {
         if (categoryName.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Category name is required");
         }
+        categoriesRepository.findByCategoryNameIgnoreCaseAndIsDeletedFalse(categoryName)
+                .ifPresent(existing -> {
+                    if (selfId == null || !existing.getId().equals(selfId)) {
+                        throw new ResponseStatusException(HttpStatus.CONFLICT, "Category name already exists");
+                    }
+                });
         category.setCategoryName(categoryName);
 
         if (request.getParentId() == null) {
@@ -99,11 +127,31 @@ public class AdminCategoryManagementService {
 
         Category parent = categoriesRepository.findByIdAndIsDeletedFalse(request.getParentId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Parent category not found"));
+
+        if (wouldCreateParentCycle(selfId, parent)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Parent category creates a cycle");
+        }
+
         category.setParentID(parent);
     }
 
+    private boolean wouldCreateParentCycle(Long selfId, Category parent) {
+        if (selfId == null || parent == null) {
+            return false;
+        }
+
+        Category cursor = parent;
+        while (cursor != null) {
+            if (selfId.equals(cursor.getId())) {
+                return true;
+            }
+            cursor = cursor.getParentID();
+        }
+        return false;
+    }
+
     private AdminCategoryResponse toResponse(Category category) {
-        long totalBooks = categoriesRepository.countBooksByCategoryId(category.getId());
+        long totalBooks = categoriesRepository.countNonDeletedBooksByCategoryId(category.getId());
         Category parent = category.getParentID();
 
         return new AdminCategoryResponse(

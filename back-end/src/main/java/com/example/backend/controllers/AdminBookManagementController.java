@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.backend.dto.requests.admin.AdminBookUpsertRequest;
+import com.example.backend.dto.responseModel.admin.AdminBookOptionsResponse;
 import com.example.backend.dto.responseModel.admin.AdminBookPageResponse;
 import com.example.backend.dto.responseModel.admin.AdminBookResponse;
 import com.example.backend.services.AdminBookManagementService;
@@ -61,6 +62,11 @@ public class AdminBookManagementController {
             @RequestParam(required = false) Boolean includeDeleted
     ) {
         return ResponseEntity.ok(adminBookManagementService.getBooks(page, size, keyword, categoryId, authorId, includeDeleted));
+    }
+
+    @GetMapping("/options")
+    public ResponseEntity<AdminBookOptionsResponse> getBookOptions() {
+        return ResponseEntity.ok(adminBookManagementService.getFormOptions());
     }
     // --- ADMIN BOOK MANAGEMENT END: REST endpoints for admin book CRUD/list/filter ---
 }

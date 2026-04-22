@@ -367,6 +367,13 @@
 	background: rgba(220, 38, 38, 0.08);
 }
 
+.kb-cm-action-btn:disabled {
+	opacity: 0.45;
+	cursor: not-allowed;
+	border-color: var(--kb-cm-border);
+	background: #f8fafc;
+}
+
 .kb-cm-pagination {
 	padding: 12px 14px;
 	border-top: 1px solid #e9eef5;

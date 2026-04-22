@@ -464,6 +464,21 @@
 	background: rgba(16, 185, 129, 0.13);
 }
 
+.um-status-badge-active {
+	color: #047857;
+	background: rgba(16, 185, 129, 0.13);
+}
+
+.um-status-badge-inactive {
+	color: #b45309;
+	background: rgba(245, 158, 11, 0.16);
+}
+
+.um-status-badge-deleted {
+	color: #b91c1c;
+	background: rgba(239, 68, 68, 0.14);
+}
+
 .um-status-dot {
 	width: 8px;
 	height: 8px;
@@ -483,6 +498,13 @@
 	border: 1px solid var(--um-border);
 	background: #ffffff;
 	color: var(--um-primary);
+}
+
+.um-action-btn:disabled {
+	opacity: 0.45;
+	cursor: not-allowed;
+	border-color: var(--um-border);
+	background: #f8fafc;
 }
 
 .um-edit-btn:hover {

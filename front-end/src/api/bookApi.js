@@ -199,6 +199,156 @@ export const refuseAdminReturnRequest = async (orderId, payload = {}) => {
 }
 // --- ADMIN ORDERS REFACTOR END: admin order management APIs ---
 
+// --- ADMIN BOOK MANAGEMENT START: admin book CRUD/list/options APIs ---
+export const getAdminBooks = async ({
+    page = 0,
+    size = 10,
+    keyword = "",
+    categoryId,
+    authorId,
+    includeDeleted = false,
+} = {}) => {
+    const res = await axiosClient.get("/admin/books", {
+        params: {
+            page,
+            size,
+            keyword: keyword?.trim() || undefined,
+            categoryId: categoryId || undefined,
+            authorId: authorId || undefined,
+            includeDeleted,
+        },
+    });
+    return res.data;
+};
+
+export const getAdminBookDetail = async (bookId) => {
+    const res = await axiosClient.get(`/admin/books/${bookId}`);
+    return res.data;
+};
+
+export const getAdminBookOptions = async () => {
+    const res = await axiosClient.get("/admin/books/options");
+    return res.data;
+};
+
+export const createAdminBook = async (payload) => {
+    const res = await axiosClient.post("/admin/books", payload);
+    return res.data;
+};
+
+export const updateAdminBook = async (bookId, payload) => {
+    const res = await axiosClient.put(`/admin/books/${bookId}`, payload);
+    return res.data;
+};
+
+export const deleteAdminBook = async (bookId) => {
+    const res = await axiosClient.delete(`/admin/books/${bookId}`);
+    return res.data ?? null;
+};
+// --- ADMIN BOOK MANAGEMENT END: admin book CRUD/list/options APIs ---
+
+// --- ADMIN CATEGORY MANAGEMENT START: admin category CRUD/list/options APIs ---
+export const getAdminCategories = async ({
+    page = 0,
+    size = 10,
+    keyword = "",
+    includeDeleted = false,
+} = {}) => {
+    const res = await axiosClient.get("/admin/categories", {
+        params: {
+            page,
+            size,
+            keyword: keyword?.trim() || undefined,
+            includeDeleted,
+        },
+    });
+    return res.data;
+};
+
+export const getAdminCategoryDetail = async (categoryId) => {
+    const res = await axiosClient.get(`/admin/categories/${categoryId}`);
+    return res.data;
+};
+
+export const getAdminCategoryOptions = async () => {
+    const res = await axiosClient.get("/admin/categories/options");
+    return res.data;
+};
+
+export const createAdminCategory = async (payload) => {
+    const res = await axiosClient.post("/admin/categories", payload);
+    return res.data;
+};
+
+export const updateAdminCategory = async (categoryId, payload) => {
+    const res = await axiosClient.put(`/admin/categories/${categoryId}`, payload);
+    return res.data;
+};
+
+export const deleteAdminCategory = async (categoryId) => {
+    const res = await axiosClient.delete(`/admin/categories/${categoryId}`);
+    return res.data ?? null;
+};
+// --- ADMIN CATEGORY MANAGEMENT END: admin category CRUD/list/options APIs ---
+
+// --- ADMIN USER MANAGEMENT START: admin user CRUD/list/options APIs ---
+export const getAdminUsers = async ({
+    page = 0,
+    size = 10,
+    keyword = "",
+    role,
+    isActive,
+    isDeleted,
+} = {}) => {
+    const res = await axiosClient.get("/admin/users", {
+        params: {
+            page,
+            size,
+            keyword: keyword?.trim() || undefined,
+            role: role || undefined,
+            isActive: typeof isActive === "boolean" ? isActive : undefined,
+            isDeleted: typeof isDeleted === "boolean" ? isDeleted : undefined,
+        },
+    });
+    return res.data;
+};
+
+export const getAdminUserDetail = async (userId) => {
+    const res = await axiosClient.get(`/admin/users/${userId}`);
+    return res.data;
+};
+
+export const getAdminUserOptions = async () => {
+    const res = await axiosClient.get("/admin/users/options");
+    return res.data;
+};
+
+export const createAdminUser = async (payload) => {
+    const res = await axiosClient.post("/admin/users", payload);
+    return res.data;
+};
+
+export const updateAdminUser = async (userId, payload) => {
+    const res = await axiosClient.put(`/admin/users/${userId}`, payload);
+    return res.data;
+};
+
+export const setAdminUserStatus = async (userId, isActive) => {
+    const res = await axiosClient.patch(`/admin/users/${userId}/status`, { isActive });
+    return res.data;
+};
+
+export const softDeleteAdminUser = async (userId) => {
+    const res = await axiosClient.patch(`/admin/users/${userId}/soft-delete`);
+    return res.data;
+};
+
+export const restoreAdminUser = async (userId) => {
+    const res = await axiosClient.patch(`/admin/users/${userId}/restore`);
+    return res.data;
+};
+// --- ADMIN USER MANAGEMENT END: admin user CRUD/list/options APIs ---
+
 // === CHECKOUT REFACTOR START: checkout profile APIs (contact + addresses) ===
 export const getCheckoutProfile = async () => {
     const res = await axiosClient.get('/checkout/profile');

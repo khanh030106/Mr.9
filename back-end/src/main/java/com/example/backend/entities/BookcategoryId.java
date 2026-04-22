@@ -21,7 +21,7 @@ public class BookcategoryId implements Serializable {
 
     @NotNull
     @Column(name = "categoryid", nullable = false)
-    private Integer categoryid;
+    private Long categoryid;
 
 
 }

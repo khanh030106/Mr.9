@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.backend.dto.requests.admin.AdminCategoryUpsertRequest;
+import com.example.backend.dto.responseModel.admin.AdminCategoryOptionsResponse;
 import com.example.backend.dto.responseModel.admin.AdminCategoryPageResponse;
 import com.example.backend.dto.responseModel.admin.AdminCategoryResponse;
 import com.example.backend.services.AdminCategoryManagementService;
@@ -59,6 +60,11 @@ public class AdminCategoryManagementController {
             @RequestParam(required = false) Boolean includeDeleted
     ) {
         return ResponseEntity.ok(adminCategoryManagementService.getCategories(page, size, keyword, includeDeleted));
+    }
+
+    @GetMapping("/options")
+    public ResponseEntity<AdminCategoryOptionsResponse> getCategoryOptions() {
+        return ResponseEntity.ok(adminCategoryManagementService.getCategoryOptions());
     }
     // --- ADMIN CATEGORY MANAGEMENT END: REST endpoints for admin category CRUD/list/search ---
 }

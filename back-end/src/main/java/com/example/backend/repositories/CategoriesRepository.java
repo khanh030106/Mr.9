@@ -1,14 +1,15 @@
 package com.example.backend.repositories;
 
-import com.example.backend.entities.Category;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
-import java.util.Optional;
+import com.example.backend.entities.Category;
 
 public interface CategoriesRepository extends JpaRepository<Category, Long> {
 
@@ -21,7 +22,7 @@ public interface CategoriesRepository extends JpaRepository<Category, Long> {
         @Query("""
         SELECT c FROM Category c
         LEFT JOIN c.parentID p
-        WHERE (:keyword IS NULL OR LOWER(c.categoryName) LIKE LOWER(CONCAT('%', :keyword, '%')))
+        WHERE (:keyword IS NULL OR LOWER(CAST(c.categoryName AS string)) LIKE LOWER(CONCAT('%', CAST(:keyword AS string), '%')))
             AND (COALESCE(:includeDeleted, false) = true OR COALESCE(c.isDeleted, false) = false)
         """)
         Page<Category> findAdminCategories(
@@ -33,9 +34,25 @@ public interface CategoriesRepository extends JpaRepository<Category, Long> {
         Optional<Category> findByIdAndIsDeletedFalse(Long id);
 
         @Query("""
-        SELECT COUNT(bc) FROM Bookcategory bc
-        WHERE bc.categoryID.id = :categoryId
+        SELECT c FROM Category c
+        WHERE COALESCE(c.isDeleted, false) = false
+          AND LOWER(CAST(c.categoryName AS string)) = LOWER(CAST(:categoryName AS string))
         """)
-        long countBooksByCategoryId(@Param("categoryId") Long categoryId);
+        Optional<Category> findByCategoryNameIgnoreCaseAndIsDeletedFalse(@Param("categoryName") String categoryName);
+
+        @Query("""
+        SELECT c FROM Category c
+        WHERE COALESCE(c.isDeleted, false) = false
+        ORDER BY c.categoryName ASC
+        """)
+        List<Category> findAllActiveOrderByName();
+
+        @Query("""
+        SELECT COUNT(bc) FROM Bookcategory bc
+        JOIN bc.bookID b
+        WHERE bc.categoryID.id = :categoryId
+          AND COALESCE(b.isDeleted, false) = false
+        """)
+        long countNonDeletedBooksByCategoryId(@Param("categoryId") Long categoryId);
         // --- ADMIN CATEGORY MANAGEMENT END: list/search helpers for admin APIs ---
 }

@@ -37,10 +37,17 @@ public class AdminBookUpsertRequest {
 
     private Long publisherId;
 
+    @Size(max = 150, message = "Publisher name must be <= 150 characters")
+    private String newPublisherName;
+
     private Boolean isActive;
 
     private List<Long> categoryIds;
 
+    private List<@NotBlank(message = "New category name must not be blank") @Size(max = 100, message = "Category name must be <= 100 characters") String> newCategoryNames;
+
     private List<Long> authorIds;
+
+    private List<@NotBlank(message = "New author name must not be blank") @Size(max = 150, message = "Author name must be <= 150 characters") String> newAuthorNames;
     // --- ADMIN BOOK MANAGEMENT END: validated payload for create/update book ---
 }

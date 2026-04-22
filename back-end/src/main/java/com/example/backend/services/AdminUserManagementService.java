@@ -18,6 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.example.backend.dto.requests.admin.AdminUserCreateRequest;
 import com.example.backend.dto.requests.admin.AdminUserUpdateRequest;
+import com.example.backend.dto.responseModel.admin.AdminUserOptionsResponse;
 import com.example.backend.dto.responseModel.admin.AdminUserPageResponse;
 import com.example.backend.dto.responseModel.admin.AdminUserResponse;
 import com.example.backend.entities.Role;
@@ -81,6 +82,17 @@ public class AdminUserManagementService {
     @Transactional(readOnly = true)
     public AdminUserResponse getUserDetail(Long userId) {
         return toResponse(getUserOrThrow(userId));
+    }
+
+    @Transactional(readOnly = true)
+    public AdminUserOptionsResponse getUserOptions() {
+        return new AdminUserOptionsResponse(
+                roleRepository.findAllOrderByRoleName().stream()
+                        .map(Role::getRoleName)
+                        .filter(roleName -> roleName != null && !roleName.isBlank())
+                        .map(roleName -> new AdminUserOptionsResponse.OptionItem(roleName, prettyRoleName(roleName)))
+                        .toList()
+        );
     }
 
     @Transactional
@@ -223,6 +235,14 @@ public class AdminUserManagementService {
             normalized = "ROLE_" + normalized;
         }
         return normalized;
+    }
+
+    private String prettyRoleName(String roleName) {
+        String normalized = roleName == null ? "" : roleName.trim();
+        if (normalized.startsWith("ROLE_")) {
+            normalized = normalized.substring(5);
+        }
+        return normalized.toUpperCase(Locale.ROOT);
     }
 
     private String normalizeRequiredEmail(String email) {

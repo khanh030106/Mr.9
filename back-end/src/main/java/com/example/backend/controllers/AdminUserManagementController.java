@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.backend.dto.requests.admin.AdminUserCreateRequest;
 import com.example.backend.dto.requests.admin.AdminUserStatusRequest;
 import com.example.backend.dto.requests.admin.AdminUserUpdateRequest;
+import com.example.backend.dto.responseModel.admin.AdminUserOptionsResponse;
 import com.example.backend.dto.responseModel.admin.AdminUserPageResponse;
 import com.example.backend.dto.responseModel.admin.AdminUserResponse;
 import com.example.backend.services.AdminUserManagementService;
@@ -46,6 +47,11 @@ public class AdminUserManagementController {
     @GetMapping("/{userId}")
     public ResponseEntity<AdminUserResponse> getUserDetail(@PathVariable Long userId) {
         return ResponseEntity.ok(adminUserManagementService.getUserDetail(userId));
+    }
+
+    @GetMapping("/options")
+    public ResponseEntity<AdminUserOptionsResponse> getUserOptions() {
+        return ResponseEntity.ok(adminUserManagementService.getUserOptions());
     }
 
     @PostMapping

@@ -8,6 +8,7 @@ import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.example.backend.dto.requests.admin.AdminBookUpsertRequest;
+import com.example.backend.dto.responseModel.admin.AdminBookOptionsResponse;
 import com.example.backend.dto.responseModel.admin.AdminBookPageResponse;
 import com.example.backend.dto.responseModel.admin.AdminBookResponse;
 import com.example.backend.entities.Author;
@@ -29,6 +31,7 @@ import com.example.backend.entities.Bookauthor;
 import com.example.backend.entities.BookauthorId;
 import com.example.backend.entities.Bookcategory;
 import com.example.backend.entities.BookcategoryId;
+import com.example.backend.entities.Bookimage;
 import com.example.backend.entities.Category;
 import com.example.backend.entities.Inventory;
 import com.example.backend.entities.Publisher;
@@ -86,9 +89,9 @@ public class AdminBookManagementService {
             book.setIsDeleted(false);
         }
 
-        Book savedBook = bookRepository.save(book);
-        replaceBookCategories(savedBook, request.getCategoryIds());
-        replaceBookAuthors(savedBook, request.getAuthorIds());
+        Book savedBook = bookRepository.saveAndFlush(book);
+        replaceBookCategories(savedBook, request.getCategoryIds(), request.getNewCategoryNames());
+        replaceBookAuthors(savedBook, request.getAuthorIds(), request.getNewAuthorNames());
         upsertInventory(savedBook, request.getQuantity());
 
         return mapToResponse(savedBook.getId());
@@ -98,10 +101,10 @@ public class AdminBookManagementService {
     public AdminBookResponse updateBook(Long bookId, AdminBookUpsertRequest request) {
         Book book = getActiveBookOrThrow(bookId);
         applyCommonFields(book, request);
-        Book savedBook = bookRepository.save(book);
+        Book savedBook = bookRepository.saveAndFlush(book);
 
-        replaceBookCategories(savedBook, request.getCategoryIds());
-        replaceBookAuthors(savedBook, request.getAuthorIds());
+        replaceBookCategories(savedBook, request.getCategoryIds(), request.getNewCategoryNames());
+        replaceBookAuthors(savedBook, request.getAuthorIds(), request.getNewAuthorNames());
         upsertInventory(savedBook, request.getQuantity());
 
         return mapToResponse(savedBook.getId());
@@ -156,6 +159,23 @@ public class AdminBookManagementService {
         );
     }
 
+    @Transactional(readOnly = true)
+    public AdminBookOptionsResponse getFormOptions() {
+        List<AdminBookOptionsResponse.OptionItem> publishers = publisherRepository.findAllActiveOrderByName().stream()
+                .map(publisher -> new AdminBookOptionsResponse.OptionItem(publisher.getId(), publisher.getPublisherName()))
+                .toList();
+
+        List<AdminBookOptionsResponse.OptionItem> authors = authorRepository.findAllActiveOrderByName().stream()
+                .map(author -> new AdminBookOptionsResponse.OptionItem(author.getId(), author.getAuthorName()))
+                .toList();
+
+        List<AdminBookOptionsResponse.OptionItem> categories = categoriesRepository.findAllActiveOrderByName().stream()
+                .map(category -> new AdminBookOptionsResponse.OptionItem(category.getId(), category.getCategoryName()))
+                .toList();
+
+        return new AdminBookOptionsResponse(publishers, authors, categories);
+    }
+
     private Book getBookOrThrow(Long bookId) {
         return bookRepository.findById(bookId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Book not found"));
@@ -176,6 +196,16 @@ public class AdminBookManagementService {
     }
 
     private AdminBookResponse mapBookToResponse(Book book, Inventory inventory) {
+        String imageUrl = resolveMainImageUrl(book);
+
+        List<Long> categoryIds = book.getBookCategories().stream()
+            .map(Bookcategory::getCategoryID)
+            .filter(category -> category != null && !Boolean.TRUE.equals(category.getIsDeleted()))
+            .map(Category::getId)
+            .distinct()
+            .sorted(Long::compareTo)
+            .toList();
+
         List<String> categories = book.getBookCategories().stream()
                 .map(Bookcategory::getCategoryID)
                 .filter(category -> category != null && !Boolean.TRUE.equals(category.getIsDeleted()))
@@ -183,6 +213,14 @@ public class AdminBookManagementService {
                 .distinct()
                 .sorted(String::compareToIgnoreCase)
                 .toList();
+
+        List<Long> authorIds = book.getBookAuthors().stream()
+            .map(Bookauthor::getAuthorID)
+            .filter(author -> author != null && !Boolean.TRUE.equals(author.getIsDeleted()))
+            .map(Author::getId)
+            .distinct()
+            .sorted(Long::compareTo)
+            .toList();
 
         List<String> authors = book.getBookAuthors().stream()
                 .map(Bookauthor::getAuthorID)
@@ -199,19 +237,38 @@ public class AdminBookManagementService {
                 book.getTitle(),
                 book.getSlug(),
                 book.getIsbn(),
+                imageUrl,
                 book.getDescription(),
                 book.getPrice(),
                 quantity,
                 book.getSoldCount(),
+                book.getPublisherID() != null ? book.getPublisherID().getId() : null,
                 book.getPublisherID() != null ? book.getPublisherID().getPublisherName() : null,
                 book.getPublishYear(),
                 book.getLanguage(),
                 Boolean.TRUE.equals(book.getIsActive()),
                 Boolean.TRUE.equals(book.getIsDeleted()),
                 book.getCreatedAt(),
+                categoryIds,
                 categories,
+                authorIds,
                 authors
         );
+    }
+
+    private String resolveMainImageUrl(Book book) {
+        return book.getBookImages().stream()
+                .filter(Objects::nonNull)
+                .filter(img -> Boolean.TRUE.equals(img.getIsMain()))
+                .map(Bookimage::getImageUrl)
+                .filter(url -> url != null && !url.isBlank())
+                .findFirst()
+                .or(() -> book.getBookImages().stream()
+                        .filter(Objects::nonNull)
+                        .map(Bookimage::getImageUrl)
+                        .filter(url -> url != null && !url.isBlank())
+                        .findFirst())
+                .orElse(null);
     }
 
     private void applyCommonFields(Book book, AdminBookUpsertRequest request) {
@@ -234,19 +291,26 @@ public class AdminBookManagementService {
             book.setIsActive(true);
         }
 
-        if (request.getPublisherId() != null) {
+        String newPublisherName = trimToNull(request.getNewPublisherName());
+        if (newPublisherName != null) {
+            book.setPublisherID(getOrCreatePublisher(newPublisherName));
+        } else if (request.getPublisherId() != null) {
             Publisher publisher = publisherRepository.findById(request.getPublisherId())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Publisher not found"));
+
+            if (Boolean.TRUE.equals(publisher.getIsDeleted())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Publisher not found");
+            }
             book.setPublisherID(publisher);
         } else {
             book.setPublisherID(null);
         }
     }
 
-    private void replaceBookCategories(Book book, List<Long> categoryIds) {
+    private void replaceBookCategories(Book book, List<Long> categoryIds, List<String> newCategoryNames) {
         bookCategoryRepository.deleteByBookID_Id(book.getId());
 
-        List<Long> normalizedCategoryIds = normalizeDistinctIds(categoryIds);
+        List<Long> normalizedCategoryIds = mergeCategoryIds(categoryIds, newCategoryNames);
         if (normalizedCategoryIds.isEmpty()) {
             return;
         }
@@ -264,7 +328,7 @@ public class AdminBookManagementService {
             Bookcategory mapping = new Bookcategory();
             BookcategoryId mappingId = new BookcategoryId();
             mappingId.setBookid(book.getId());
-            mappingId.setCategoryid(Math.toIntExact(category.getId()));
+            mappingId.setCategoryid(category.getId());
             mapping.setId(mappingId);
             mapping.setBookID(book);
             mapping.setCategoryID(category);
@@ -274,10 +338,10 @@ public class AdminBookManagementService {
         bookCategoryRepository.saveAll(mappings);
     }
 
-    private void replaceBookAuthors(Book book, List<Long> authorIds) {
+    private void replaceBookAuthors(Book book, List<Long> authorIds, List<String> newAuthorNames) {
         bookAuthorRepository.deleteByBookID_Id(book.getId());
 
-        List<Long> normalizedAuthorIds = normalizeDistinctIds(authorIds);
+        List<Long> normalizedAuthorIds = mergeAuthorIds(authorIds, newAuthorNames);
         if (normalizedAuthorIds.isEmpty()) {
             return;
         }
@@ -306,20 +370,13 @@ public class AdminBookManagementService {
     }
 
     private void upsertInventory(Book book, Integer quantity) {
-        int safeQuantity = quantity != null ? Math.max(0, quantity) : 0;
-        Inventory inventory = inventoryRepository.findById(book.getId()).orElseGet(() -> {
-            Inventory newInventory = new Inventory();
-            newInventory.setId(book.getId());
-            newInventory.setBookID(book);
-            newInventory.setReserved(0);
-            return newInventory;
-        });
-
-        inventory.setQuantity(safeQuantity);
-        if (inventory.getReserved() == null) {
-            inventory.setReserved(0);
+        Long bookId = book != null ? book.getId() : null;
+        if (bookId == null) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Cannot create inventory for book without id");
         }
-        inventoryRepository.save(inventory);
+
+        int safeQuantity = quantity != null ? Math.max(0, quantity) : 0;
+        inventoryRepository.upsertInventory(bookId, safeQuantity, 0);
     }
 
     private BigDecimal sanitizePrice(BigDecimal price) {
@@ -353,6 +410,66 @@ public class AdminBookManagementService {
             normalized.add(id);
         }
         return normalized.stream().sorted(Comparator.naturalOrder()).toList();
+    }
+
+    private List<Long> mergeCategoryIds(List<Long> selectedIds, List<String> newCategoryNames) {
+        Set<Long> merged = new LinkedHashSet<>(normalizeDistinctIds(selectedIds));
+        for (String rawName : safeList(newCategoryNames)) {
+            String categoryName = trimToNull(rawName);
+            if (categoryName == null) {
+                continue;
+            }
+
+            Category category = categoriesRepository.findByCategoryNameIgnoreCaseAndIsDeletedFalse(categoryName)
+                    .orElseGet(() -> createCategory(categoryName));
+            merged.add(category.getId());
+        }
+        return merged.stream().sorted(Long::compareTo).toList();
+    }
+
+    private List<Long> mergeAuthorIds(List<Long> selectedIds, List<String> newAuthorNames) {
+        Set<Long> merged = new LinkedHashSet<>(normalizeDistinctIds(selectedIds));
+        for (String rawName : safeList(newAuthorNames)) {
+            String authorName = trimToNull(rawName);
+            if (authorName == null) {
+                continue;
+            }
+
+            Author author = authorRepository.findByAuthorNameIgnoreCaseAndIsDeletedFalse(authorName)
+                    .orElseGet(() -> createAuthor(authorName));
+            merged.add(author.getId());
+        }
+        return merged.stream().sorted(Long::compareTo).toList();
+    }
+
+    private Publisher getOrCreatePublisher(String publisherName) {
+        return publisherRepository.findByPublisherNameIgnoreCaseAndIsDeletedFalse(publisherName)
+                .orElseGet(() -> {
+                    Publisher publisher = new Publisher();
+                    publisher.setPublisherName(publisherName);
+                    publisher.setIsDeleted(false);
+                    return publisherRepository.save(publisher);
+                });
+    }
+
+    private Category createCategory(String categoryName) {
+        Category category = new Category();
+        category.setCategoryName(categoryName);
+        category.setIsDeleted(false);
+        return categoriesRepository.save(category);
+    }
+
+    private Author createAuthor(String authorName) {
+        Long nextId = authorRepository.findTopByOrderByIdDesc().map(Author::getId).orElse(0L) + 1L;
+        Author author = new Author();
+        author.setId(nextId);
+        author.setAuthorName(authorName);
+        author.setIsDeleted(false);
+        return authorRepository.save(author);
+    }
+
+    private List<String> safeList(List<String> values) {
+        return values == null ? List.of() : values.stream().filter(Objects::nonNull).toList();
     }
 
     private String normalizeKeyword(String keyword) {
