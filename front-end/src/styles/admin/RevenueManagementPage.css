@@ -1,0 +1,482 @@
+.revenue-management-page {
+	--rm-primary: #2563eb;
+	--rm-primary-dark: #1d4ed8;
+	--rm-secondary: #f97316;
+	--rm-secondary-dark: #ea580c;
+	--rm-text: #1f2a44;
+	--rm-text-soft: #64748b;
+	--rm-border: #dbe3ef;
+	--rm-surface: #ffffff;
+	--rm-bg: #f4f7fb;
+	--rm-shadow-sm: 0 8px 18px rgba(15, 23, 42, 0.08);
+	--rm-shadow-md: 0 18px 40px rgba(15, 23, 42, 0.13);
+
+	min-height: 100vh;
+	padding: 20px;
+	position: relative;
+	overflow: hidden;
+	background: radial-gradient(circle at 10% 15%, rgba(37, 99, 235, 0.11), transparent 28%),
+		radial-gradient(circle at 90% 80%, rgba(249, 115, 22, 0.13), transparent 30%),
+		#f3f4f6;
+	animation: rmFadeIn 0.5s ease;
+}
+
+.revenue-management-page::before,
+.revenue-management-page::after {
+	content: "";
+	position: absolute;
+	border-radius: 999px;
+	opacity: 0.45;
+	pointer-events: none;
+	z-index: 0;
+}
+
+.revenue-management-page::before {
+	width: 280px;
+	height: 280px;
+	top: -85px;
+	right: -70px;
+	background: linear-gradient(135deg, rgba(37, 99, 235, 0.35), rgba(147, 197, 253, 0.2));
+}
+
+.revenue-management-page::after {
+	width: 240px;
+	height: 240px;
+	bottom: -95px;
+	left: -75px;
+	background: linear-gradient(135deg, rgba(249, 115, 22, 0.32), rgba(254, 215, 170, 0.2));
+}
+
+.revenue-management-page .admin-content {
+	max-width: 1240px;
+	margin: 0 auto;
+	position: relative;
+	z-index: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 3px;
+}
+
+.revenue-management-page .admin-title-section {
+	padding: 14px 16px;
+	border-radius: 12px;
+	border: 1px solid rgba(37, 99, 235, 0.16);
+	background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(249, 115, 22, 0.08));
+	box-shadow: var(--rm-shadow-sm);
+	animation: rmSlideInLeft 0.45s ease;
+}
+
+.revenue-management-page .admin-page-title {
+	margin: 0;
+	font-size: 1.5rem;
+	font-weight: 800;
+	letter-spacing: -0.02em;
+	color: var(--rm-text);
+}
+
+.revenue-management-page .admin-page-subtitle {
+	margin: 6px 0 0;
+	font-size: 0.94rem;
+	font-weight: 500;
+	color: var(--rm-text-soft);
+	line-height: 1.5;
+}
+
+.revenue-management-page .admin-stats-grid {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: 3px;
+	animation: rmFadeIn 0.5s ease;
+}
+
+.revenue-management-page .admin-stat-card,
+.revenue-management-page .admin-table-card,
+.revenue-management-page .admin-chart-card,
+.revenue-management-page .admin-progress-card {
+	background: var(--rm-surface);
+	border: 1px solid var(--rm-border);
+	border-radius: 5px;
+	box-shadow: var(--rm-shadow-sm);
+}
+
+.revenue-management-page .admin-stat-card {
+	padding: 12px;
+	position: relative;
+	overflow: hidden;
+	animation: rmSlideInLeft 0.5s ease-in-out both;
+	animation-delay: 0.1s;
+}
+.revenue-management-page .admin-stat-label {
+	margin: 0 0 6px;
+	font-size: 0.84rem;
+	font-weight: 700;
+	color: var(--rm-text-soft);
+	text-transform: uppercase;
+	letter-spacing: 0.03em;
+}
+
+.revenue-management-page .admin-stat-value-row {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 8px;
+	margin-bottom: 8px;
+}
+
+.revenue-management-page .admin-stat-value {
+	margin: 0;
+	font-size: 1.48rem;
+	font-weight: 800;
+	color: var(--rm-text);
+	line-height: 1.2;
+}
+
+.revenue-management-page .admin-stat-change {
+	padding: 3px 8px;
+	border-radius: 999px;
+	font-size: 0.76rem;
+	font-weight: 700;
+	color: #047857;
+	background: rgba(16, 185, 129, 0.13);
+}
+
+.revenue-management-page .admin-stat-progress {
+	height: 6px;
+	border-radius: 999px;
+	background: #e2e8f0;
+	overflow: hidden;
+}
+
+.revenue-management-page .admin-stat-progress-bar {
+	height: 100%;
+	width: 42%;
+	border-radius: inherit;
+	background: linear-gradient(90deg, var(--rm-primary), var(--rm-secondary));
+}
+
+.revenue-management-page .admin-table-card {
+	overflow: hidden;
+	animation: rmSlideInLeft 0.5s ease-in-out both;
+	animation-delay: 0.1s;
+}
+
+.revenue-management-page .admin-table-header {
+	padding: 12px 14px;
+	border-bottom: 1px solid #e9eef5;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 10px;
+}
+
+.revenue-management-page .admin-table-title {
+	margin: 0;
+	font-size: 1.06rem;
+	font-weight: 800;
+	color: var(--rm-text);
+}
+
+.revenue-management-page .admin-view-all {
+	font-size: 0.86rem;
+	font-weight: 700;
+	color: var(--rm-secondary);
+	text-decoration: none;
+	transition: color 0.2s ease;
+}
+
+.revenue-management-page .admin-view-all:hover {
+	color: var(--rm-secondary-dark);
+	text-decoration: underline;
+}
+
+.revenue-management-page .admin-table-wrapper {
+	overflow-x: auto;
+}
+
+.revenue-management-page .admin-table {
+	width: 100%;
+	min-width: 860px;
+	border-collapse: separate;
+	border-spacing: 0;
+}
+
+.revenue-management-page .admin-table th,
+.revenue-management-page .admin-table td {
+	padding: 12px 14px;
+	text-align: center;
+	vertical-align: middle;
+	border-bottom: 1px solid #e9eef5;
+}
+
+.revenue-management-page .admin-table th {
+	font-size: 0.82rem;
+	font-weight: 800;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	color: #334155;
+	background: #f8fafc;
+	position: sticky;
+	top: 0;
+	z-index: 1;
+	text-align: center;
+}
+
+.revenue-management-page .admin-table tbody tr:hover {
+	background: linear-gradient(90deg, rgba(37, 99, 235, 0.04), rgba(249, 115, 22, 0.03));
+}
+
+.revenue-management-page .admin-table tbody tr:first-child td {
+	text-align: center;
+	font-weight: 600;
+	color: var(--rm-text-soft);
+	padding: 20px 12px;
+}
+
+.revenue-management-page .admin-category-cell {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.revenue-management-page .admin-category-icon {
+	width: 36px;
+	height: 36px;
+	border-radius: 10px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	color: #ffffff;
+	background: linear-gradient(135deg, var(--rm-primary), #60a5fa);
+}
+
+.revenue-management-page .admin-category-name {
+	font-size: 0.95rem;
+	font-weight: 700;
+	color: var(--rm-text);
+}
+
+.revenue-management-page .admin-revenue-cell {
+	font-weight: 800;
+	color: #0f766e;
+}
+
+.revenue-management-page .admin-price-badge {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 5px 10px;
+	border-radius: 999px;
+	font-size: 0.8rem;
+	font-weight: 700;
+	color: #1d4ed8;
+	background: #dbeafe;
+}
+
+.revenue-management-page .admin-table-footer {
+	padding: 12px 14px;
+	border-top: 1px solid #e9eef5;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 10px;
+	flex-wrap: wrap;
+}
+
+.revenue-management-page .admin-table-info {
+	margin: 0;
+	font-size: 0.86rem;
+	color: var(--rm-text-soft);
+}
+
+.revenue-management-page .admin-pagination {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.revenue-management-page .admin-pagination-btn {
+	width: 34px;
+	height: 34px;
+	border-radius: 7px;
+	border: 1px solid var(--rm-border);
+	background: #ffffff;
+	color: var(--rm-primary-dark);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+.revenue-management-page .admin-pagination-btn:hover:not(:disabled) {
+	background: #eff6ff;
+	border-color: #bfdbfe;
+}
+
+.revenue-management-page .admin-pagination-btn:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.revenue-management-page .admin-secondary-grid {
+	display: grid;
+	grid-template-columns: 1.2fr 1fr;
+	gap: 10px;
+	animation: rmSlideInLeft 0.5s ease-in-out both;
+	animation-delay: 0.1s;
+}
+
+.revenue-management-page .admin-chart-card,
+.revenue-management-page .admin-progress-card {
+	padding: 12px;
+}
+
+.revenue-management-page .admin-chart-header {
+	margin-bottom: 10px;
+}
+
+.revenue-management-page .admin-chart-title {
+	margin: 0;
+	font-size: 1.04rem;
+	font-weight: 800;
+	color: var(--rm-text);
+}
+
+.revenue-management-page .admin-bar-chart {
+	height: 190px;
+	display: flex;
+	align-items: flex-end;
+	padding: 10px;
+	border: 1px dashed #cbd5e1;
+	border-radius: 10px;
+	background: linear-gradient(180deg, #f8fbff, #ffffff);
+}
+
+.revenue-management-page .admin-bar {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: flex-end;
+}
+
+.revenue-management-page .admin-bar-fill {
+	width: 52px;
+	height: 52%;
+	border-radius: 8px 8px 2px 2px;
+	background: linear-gradient(180deg, var(--rm-primary), var(--rm-secondary));
+	box-shadow: 0 8px 16px rgba(37, 99, 235, 0.28);
+}
+
+.revenue-management-page .admin-chart-labels {
+	display: flex;
+	justify-content: flex-start;
+	margin-top: 8px;
+	font-size: 0.84rem;
+	font-weight: 600;
+	color: var(--rm-text-soft);
+}
+
+.revenue-management-page .admin-progress-content {
+	margin-top: 10px;
+}
+
+.revenue-management-page .admin-progress-list {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.revenue-management-page .admin-progress-item-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 10px;
+	margin-bottom: 6px;
+}
+
+.revenue-management-page .admin-progress-label {
+	font-size: 0.9rem;
+	font-weight: 700;
+	color: var(--rm-text);
+}
+
+.revenue-management-page .admin-progress-percentage {
+	font-size: 0.84rem;
+	font-weight: 700;
+	color: var(--rm-text-soft);
+}
+
+.revenue-management-page .admin-progress-bar-container {
+	height: 8px;
+	border-radius: 999px;
+	background: #e2e8f0;
+	overflow: hidden;
+}
+
+.revenue-management-page .admin-progress-bar-fill {
+	height: 100%;
+	width: 48%;
+	border-radius: inherit;
+	background: linear-gradient(90deg, var(--rm-primary), var(--rm-secondary));
+}
+
+.revenue-management-page .admin-progress-bar-fill.slate {
+	width: 24%;
+	background: linear-gradient(90deg, #94a3b8, #64748b);
+}
+
+@media (max-width: 1180px) {
+	.revenue-management-page .admin-stats-grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.revenue-management-page .admin-secondary-grid {
+		grid-template-columns: 1fr;
+	}
+}
+
+@media (max-width: 760px) {
+	.revenue-management-page {
+		padding: 14px;
+	}
+
+	.revenue-management-page .admin-stats-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.revenue-management-page .admin-title-section,
+	.revenue-management-page .admin-table-card,
+	.revenue-management-page .admin-chart-card,
+	.revenue-management-page .admin-progress-card,
+	.revenue-management-page .admin-stat-card {
+		border-radius: 10px;
+	}
+
+	.revenue-management-page .admin-table-footer {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+}
+
+@keyframes rmFadeIn {
+	from {
+		opacity: 0;
+	}
+
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes rmSlideInLeft {
+	from {
+		opacity: 0;
+		transform: translateX(-20px);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateX(0);
+	}
+}
+

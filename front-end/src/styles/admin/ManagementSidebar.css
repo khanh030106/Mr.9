@@ -1,0 +1,284 @@
+/* REFACTOR START: Modern ecommerce admin sidebar skin */
+
+.admin-layout {
+	display: flex;
+	align-items: flex-start;
+	min-height: 100vh;
+	background: #f8fafc;
+}
+
+.admin-layout-content {
+	flex: 1;
+	min-width: 0;
+}
+
+.admin-sidebar {
+	--ms-primary: #2563eb;
+	--ms-secondary: #f97316;
+	--ms-text-primary: #1f2937;
+	--ms-text-secondary: #475569;
+	--ms-text-soft: #94a3b8;
+	--ms-border: #e2e8f0;
+	--ms-surface: #ffffff;
+	--ms-surface-soft: #f8fafc;
+	--ms-shadow: 0 16px 34px rgba(15, 23, 42, 0.08);
+	--ms-transition: 0.22s ease;
+
+	width: min(320px, 100%);
+	height: 100vh;
+	position: sticky;
+	top: 0;
+	align-self: flex-start;
+	flex-shrink: 0;
+	overflow-y: auto;
+	overflow-x: hidden;
+	padding: 16px 14px;
+	background:
+		linear-gradient(180deg, rgba(37, 99, 235, 0.08) 0%, rgba(37, 99, 235, 0) 32%),
+		linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+	border-right: 1px solid rgba(148, 163, 184, 0.18);
+	box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.7);
+	scrollbar-width: thin;
+	scrollbar-color: rgba(148, 163, 184, 0.6) transparent;
+}
+
+.admin-sidebar::-webkit-scrollbar {
+	width: 6px;
+}
+
+.admin-sidebar::-webkit-scrollbar-thumb {
+	border-radius: 999px;
+	background: rgba(148, 163, 184, 0.65);
+}
+
+.admin-sidebar > * {
+	position: relative;
+	z-index: 1;
+}
+
+.admin-sidebar-header {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 12px;
+	margin-bottom: 18px;
+	border-radius: 16px;
+	background: rgba(255, 255, 255, 0.86);
+	border: 1px solid rgba(226, 232, 240, 0.9);
+	backdrop-filter: blur(8px);
+	box-shadow: var(--ms-shadow);
+	animation: msSlideInLeft 0.45s ease-out;
+}
+
+.admin-sidebar-logo {
+	width: 44px;
+	height: 44px;
+	border-radius: 14px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	background: linear-gradient(135deg, var(--ms-primary), var(--ms-secondary));
+	color: #ffffff;
+	box-shadow: 0 8px 20px rgba(37, 99, 235, 0.28);
+}
+
+.admin-sidebar-brand h1 {
+	margin: 0;
+	font-size: 1.08rem;
+	line-height: 1.2;
+	letter-spacing: -0.02em;
+	font-weight: 800;
+	color: var(--ms-text-primary);
+}
+
+.admin-sidebar-brand p {
+	margin: 3px 0 0;
+	font-size: 12px;
+	font-weight: 600;
+	color: var(--ms-text-secondary);
+}
+
+.admin-sidebar .nav-section {
+	margin-bottom: 20px;
+	padding: 12px;
+	border: 1px solid var(--ms-border);
+	border-radius: 14px;
+	background: var(--ms-surface);
+	box-shadow: 0 8px 16px rgba(15, 23, 42, 0.04);
+	animation: msSlideInLeft 0.45s ease both;
+}
+
+.admin-sidebar .section-title {
+	margin: 0 0 10px;
+	padding: 0 2px;
+	font-size: 11px;
+	font-weight: 800;
+	text-transform: uppercase;
+	letter-spacing: 0.12em;
+	color: var(--ms-text-soft);
+}
+
+.admin-sidebar .nav-list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: grid;
+	gap: 6px;
+}
+
+.admin-sidebar .nav-item {
+	margin: 0;
+	padding: 0;
+}
+
+.admin-sidebar .nav-link {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	width: 100%;
+	padding: 11px 12px;
+	border-radius: 10px;
+	border: 1px solid transparent;
+	background: transparent;
+	color: var(--ms-text-secondary);
+	font-size: 0.94rem;
+	font-weight: 600;
+	line-height: 1.25;
+	text-decoration: none;
+	transition:
+		color var(--ms-transition),
+		background-color var(--ms-transition),
+		border-color var(--ms-transition),
+		transform var(--ms-transition),
+		box-shadow var(--ms-transition);
+}
+
+.admin-sidebar .nav-link .nav-link-text {
+	font-size: inherit;
+	font-weight: inherit;
+	line-height: inherit;
+	color: inherit;
+}
+
+.admin-sidebar .nav-link .material-icons-outlined,
+.admin-sidebar .nav-link .material-symbols-outlined {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	width: 30px;
+	height: 30px;
+	border-radius: 8px;
+	background: var(--ms-surface-soft);
+	color: #64748b;
+	transition: color var(--ms-transition), background-color var(--ms-transition), transform var(--ms-transition);
+}
+
+.admin-sidebar .nav-link .MuiSvgIcon-root {
+	font-size: 1.2rem;
+}
+
+.admin-sidebar .nav-link:hover {
+	background: rgba(37, 99, 235, 0.08);
+	color: var(--ms-primary);
+	border-color: rgba(37, 99, 235, 0.18);
+	transform: translateX(2px);
+}
+
+.admin-sidebar .nav-link:hover .material-icons-outlined,
+.admin-sidebar .nav-link:hover .material-symbols-outlined {
+	background: rgba(37, 99, 235, 0.13);
+	color: var(--ms-primary);
+	transform: scale(1.04);
+}
+
+.admin-sidebar .nav-link:focus-visible {
+	outline: 0;
+	box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+	border-color: rgba(37, 99, 235, 0.35);
+}
+
+.admin-sidebar .nav-link.active {
+	background: linear-gradient(135deg, rgba(37, 99, 235, 0.14), rgba(249, 115, 22, 0.14));
+	color: #1d4ed8;
+	border-color: rgba(37, 99, 235, 0.28);
+	box-shadow: 0 10px 22px rgba(37, 99, 235, 0.12);
+}
+
+.admin-sidebar .nav-link.active .material-icons-outlined,
+.admin-sidebar .nav-link.active .material-symbols-outlined {
+	background: linear-gradient(135deg, var(--ms-primary), var(--ms-secondary));
+	color: #ffffff;
+}
+
+.admin-sidebar .nav-link-muted {
+	opacity: 0.82;
+}
+
+.admin-sidebar .nav-link-muted:hover {
+	opacity: 1;
+	color: #334155;
+	background: rgba(148, 163, 184, 0.12);
+	border-color: rgba(148, 163, 184, 0.26);
+}
+
+@media (max-width: 1200px) {
+	.admin-sidebar {
+		width: 286px;
+	}
+}
+
+@media (max-width: 992px) {
+	.admin-layout {
+		flex-direction: column;
+	}
+
+	.admin-layout-content {
+		width: 100%;
+	}
+
+	.admin-sidebar {
+		position: static;
+		height: auto;
+		width: 100%;
+		max-height: none;
+		border-right: 0;
+		border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+	}
+
+	.admin-sidebar .nav-section {
+		margin-bottom: 12px;
+	}
+}
+
+@media (max-width: 600px) {
+	.admin-sidebar {
+		padding: 12px 10px;
+	}
+
+	.admin-sidebar .nav-link {
+		padding: 10px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.admin-sidebar,
+	.admin-sidebar * {
+		animation: none !important;
+		transition: none !important;
+	}
+}
+
+@keyframes msSlideInLeft {
+	from {
+		opacity: 0;
+		transform: translateX(-16px);
+	}
+	to {
+		opacity: 1;
+		transform: translateX(0);
+	}
+}
+
+/* REFACTOR END: Modern ecommerce admin sidebar skin */
+

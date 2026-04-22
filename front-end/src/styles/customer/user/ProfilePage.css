@@ -1,0 +1,540 @@
+/* Profile page visual style aligned with LoginPage */
+
+.pf-main-content {
+	--pf-primary: #2563eb;
+	--pf-primary-dark: #1d4ed8;
+	--pf-secondary: #f97316;
+	--pf-secondary-dark: #ea580c;
+	--pf-text-primary: #253455;
+	--pf-text-secondary: #4b5563;
+	--pf-text-light: #6b7280;
+	--pf-border: #e5e7eb;
+	--pf-bg: #f3f4f6;
+	--pf-white: #ffffff;
+	--pf-success-bg: #ecfdf3;
+	--pf-success-border: #bbf7d0;
+	--pf-success-text: #166534;
+	--pf-error-bg: #fef2f2;
+	--pf-error-border: #fecaca;
+	--pf-error-text: #991b1b;
+	--pf-shadow-sm: 0 8px 16px rgba(15, 23, 42, 0.08);
+	--pf-shadow-md: 0 14px 30px rgba(15, 23, 42, 0.1);
+	--pf-shadow-lg: 0 24px 44px rgba(15, 23, 42, 0.14);
+	--pf-transition: 0.25s ease-in-out;
+
+	min-height: calc(100vh - 72px);
+	padding: 28px 20px 36px;
+	background: radial-gradient(circle at 10% 15%, rgba(37, 99, 235, 0.11), transparent 28%),
+		radial-gradient(circle at 90% 80%, rgba(249, 115, 22, 0.13), transparent 30%), var(--pf-bg);
+	position: relative;
+	overflow: hidden;
+}
+
+.pf-main-content::before,
+.pf-main-content::after {
+	content: "";
+	position: absolute;
+	border-radius: 999px;
+	opacity: 0.45;
+	pointer-events: none;
+	animation: pfFloatBlob 8s ease-in-out infinite;
+}
+
+.pf-main-content::before {
+	width: 260px;
+	height: 260px;
+	top: -90px;
+	right: -70px;
+	background: linear-gradient(135deg, rgba(37, 99, 235, 0.35), rgba(147, 197, 253, 0.2));
+}
+
+.pf-main-content::after {
+	width: 220px;
+	height: 220px;
+	bottom: -90px;
+	left: -65px;
+	background: linear-gradient(135deg, rgba(249, 115, 22, 0.32), rgba(254, 215, 170, 0.2));
+	animation-delay: -4s;
+}
+
+.pf-content-wrapper {
+	max-width: 1120px;
+	margin: 0 auto;
+	position: relative;
+	z-index: 1;
+	animation: pfPageEnter 0.62s ease both;
+}
+
+.pf-profile-card {
+	animation: slideInLeft 0.6s ease-in-out;
+	background: rgba(255, 255, 255, 0.9);
+	border: 1px solid rgba(255, 255, 255, 0.8);
+	border-radius: 18px;
+	box-shadow: var(--pf-shadow-md);
+	backdrop-filter: blur(10px);
+	overflow: hidden;
+}
+
+.pf-hidden-file-input {
+	display: none;
+}
+
+.pf-cover-image {
+	height: 165px;
+	position: relative;
+	background: linear-gradient(135deg, rgba(37, 99, 235, 0.9), rgba(249, 115, 22, 0.9));
+}
+
+.pf-cover-gradient {
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(115deg, rgba(255, 255, 255, 0.08), transparent 45%);
+}
+
+.pf-change-cover-btn {
+	position: absolute;
+	right: 20px;
+	bottom: 18px;
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 10px 14px;
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.22);
+	color: #ffffff;
+	font-weight: 700;
+	font-size: 13px;
+	border: 1px solid rgba(255, 255, 255, 0.46);
+	cursor: pointer;
+	transition: transform var(--pf-transition), background var(--pf-transition), box-shadow var(--pf-transition);
+}
+
+.pf-change-cover-btn:hover {
+	transform: translateY(-2px);
+	background: rgba(255, 255, 255, 0.3);
+	box-shadow: 0 12px 20px rgba(15, 23, 42, 0.18);
+}
+
+.pf-profile-content {
+	animation: fadeIn 0.5s ease-in-out both;
+	animation-delay: 0.5s;
+	padding: 0 30px 28px;
+}
+
+.pf-profile-header {
+	display: flex;
+	align-items: flex-end;
+	gap: 18px;
+	margin-top: -34px;
+	margin-bottom: 20px;
+}
+
+.pf-avatar-container {
+	position: relative;
+	width: 112px;
+	height: 112px;
+	flex-shrink: 0;
+}
+
+.pf-profile-avatar {
+	width: 100%;
+	height: 100%;
+	border-radius: 50%;
+	border: 4px solid #ffffff;
+	box-shadow: var(--pf-shadow-sm);
+	background: linear-gradient(135deg, #ffffff, #f8fafc);
+}
+
+.pf-edit-avatar-btn {
+	position: absolute;
+	right: 2px;
+	bottom: 2px;
+	width: 34px;
+	height: 34px;
+	border-radius: 50%;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	background: #00b600;
+	color: #ffffff;
+	border: 2px solid #ffffff;
+	cursor: pointer;
+	transition: transform var(--pf-transition), box-shadow var(--pf-transition), filter var(--pf-transition);
+}
+
+.pf-edit-avatar-btn:hover {
+	transform: translateY(-2px) scale(1.04);
+	box-shadow: 0 10px 16px #90fd90;
+	filter: brightness(1.03);
+}
+
+.pf-profile-info {
+	min-width: 0;
+	padding-bottom: 10px;
+}
+
+.pf-profile-name {
+	margin: 0;
+	font-size: clamp(1.5rem, 1.3rem + 0.8vw, 2rem);
+	line-height: 1.15;
+	letter-spacing: -0.03em;
+	font-weight: 800;
+	color: var(--pf-text-primary);
+}
+
+.pf-profile-subtitle {
+	margin: 6px 0 0;
+	font-size: 15px;
+	font-weight: 500;
+	color: var(--pf-text-secondary);
+}
+
+.pf-alert {
+	display: none;
+	margin-bottom: 14px;
+	padding: 10px 12px;
+	border-radius: 10px;
+	font-size: 14px;
+	font-weight: 600;
+}
+
+.pf-alert-success {
+	background: var(--pf-success-bg);
+	border: 1px solid var(--pf-success-border);
+	color: var(--pf-success-text);
+}
+
+.pf-alert-error {
+	background: var(--pf-error-bg);
+	border: 1px solid var(--pf-error-border);
+	color: var(--pf-error-text);
+}
+
+.pf-form-section {
+	padding: 22px;
+	border-radius: 14px;
+	border: 1px solid var(--pf-border);
+	background: linear-gradient(180deg, #ffffff, #fbfdff);
+	animation: pfFadeUp 0.55s ease both;
+}
+
+.pf-section-header {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin-bottom: 18px;
+}
+
+.pf-section-header-icon {
+	width: 34px;
+	height: 34px;
+	border-radius: 10px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	background: rgba(37, 99, 235, 0.12);
+	color: var(--pf-primary);
+}
+
+.pf-section-title {
+	margin: 0;
+	font-size: 1.15rem;
+	letter-spacing: -0.02em;
+	font-weight: 700;
+	color: var(--pf-text-primary);
+}
+
+.pf-form-grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 16px;
+	align-items: start;
+}
+
+.pf-form-column {
+	display: grid;
+	gap: 14px;
+}
+
+.pf-form-group {
+	display: grid;
+	gap: 4px;
+}
+
+.pf-form-label {
+	font-size: 14px;
+	font-weight: 700;
+	color: var(--pf-text-primary);
+	padding-left: 2px;
+}
+
+.pf-input-wrapper {
+	position: relative;
+}
+
+.pf-form-input {
+	width: 100%;
+	height: 46px;
+	padding: 0 44px 0 14px;
+	border: 1.5px solid var(--pf-border);
+	border-radius: 10px;
+	font-size: 14px;
+	font-weight: 500;
+	font-family: inherit;
+	color: var(--pf-text-primary);
+	background: #ffffff;
+	transition: border-color var(--pf-transition), box-shadow var(--pf-transition), background var(--pf-transition);
+}
+
+.pf-form-input::placeholder {
+	color: var(--pf-text-light);
+}
+
+.pf-form-input:hover {
+	border-color: #d1d5db;
+}
+
+.pf-form-input:focus {
+	outline: none;
+	border-color: #06b6d4;
+	background: #f0fdfb;
+	box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.15);
+}
+
+.pf-form-input[type="date"] {
+	padding-right: 44px;
+}
+
+.pf-form-input[type="date"]::-webkit-calendar-picker-indicator {
+	opacity: 0;
+	cursor: pointer;
+}
+
+.pf-readonly-input {
+	background: #f9fafb;
+	color: var(--pf-text-light);
+}
+
+.pf-input-icon,
+.pf-select-icon {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	color: var(--pf-text-light);
+	pointer-events: none;
+}
+
+.pf-input-icon {
+	right: 12px;
+}
+
+.pf-select-icon {
+	right: 12px;
+}
+
+select.pf-form-input {
+	appearance: none;
+	padding-right: 72px;
+	cursor: pointer;
+}
+
+.pf-action-bar {
+	margin-top: 20px;
+	display: flex;
+	justify-content: flex-end;
+	gap: 10px;
+}
+
+.pf-btn-cancel,
+.pf-btn-save {
+	height: 42px;
+	padding: 0 16px;
+	border-radius: 10px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	font-size: 14px;
+	font-weight: 700;
+	text-decoration: none;
+	cursor: pointer;
+	transition: transform var(--pf-transition), box-shadow var(--pf-transition), border-color var(--pf-transition), color var(--pf-transition), background var(--pf-transition);
+}
+
+.pf-btn-cancel {
+	border: 1px solid var(--pf-border);
+	background: #ffffff;
+	color: var(--pf-text-secondary);
+}
+
+.pf-btn-cancel:hover {
+	border-color: #d1d5db;
+	color: var(--pf-text-primary);
+	transform: translateY(-1px);
+}
+
+.pf-btn-save {
+	border: none;
+	color: #ffffff;
+	background: #02ac02;
+	background-size: 220% 220%;
+}
+
+.pf-btn-save:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 12px 20px #a9f8a9;
+	animation: pfGradientShift 2.4s ease infinite;
+}
+
+.pf-btn-cancel:focus-visible,
+.pf-btn-save:focus-visible,
+.pf-change-cover-btn:focus-visible,
+.pf-edit-avatar-btn:focus-visible,
+.pf-form-input:focus-visible {
+	outline: none;
+	box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.18);
+}
+
+@media (max-width: 900px) {
+	.pf-profile-content {
+		padding: 0 18px 18px;
+	}
+}
+
+@media (max-width: 640px) {
+	.pf-main-content {
+		padding: 18px 12px 24px;
+	}
+
+	.pf-cover-image {
+		height: 140px;
+	}
+
+	.pf-form-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.pf-change-cover-btn {
+		right: 12px;
+		bottom: 12px;
+		padding: 9px 12px;
+	}
+
+	.pf-profile-header {
+		gap: 12px;
+		margin-top: -40px;
+	}
+
+	.pf-avatar-container {
+		width: 92px;
+		height: 92px;
+	}
+
+	.pf-profile-name {
+		font-size: 1.45rem;
+	}
+
+	.pf-form-section {
+		padding: 16px;
+	}
+
+	.pf-action-bar {
+		justify-content: stretch;
+		flex-wrap: wrap;
+	}
+
+	.pf-btn-cancel,
+	.pf-btn-save {
+		flex: 1;
+	}
+}
+
+@keyframes pfPageEnter {
+	from {
+		opacity: 0;
+		transform: translateX(-24px);
+	}
+	to {
+		opacity: 1;
+		transform: translateX(0);
+	}
+}
+
+@keyframes pfFadeUp {
+	from {
+		opacity: 0;
+		transform: translateY(12px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes pfFloatBlob {
+	0%,
+	100% {
+		transform: translateY(0);
+	}
+	50% {
+		transform: translateY(14px);
+	}
+}
+
+@keyframes pfGradientShift {
+	0% {
+		background-position: 0 50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0 50%;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.pf-main-content::before,
+	.pf-main-content::after,
+	.pf-content-wrapper,
+	.pf-form-section,
+	.pf-btn-save:hover {
+		animation: none;
+	}
+
+	.pf-change-cover-btn,
+	.pf-edit-avatar-btn,
+	.pf-form-input,
+	.pf-btn-cancel,
+	.pf-btn-save {
+		transition: none;
+	}
+
+	.pf-change-cover-btn:hover,
+	.pf-edit-avatar-btn:hover,
+	.pf-btn-cancel:hover,
+	.pf-btn-save:hover {
+		transform: none;
+	}
+}
+
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes slideInLeft {
+	from {
+		opacity: 0;
+		transform: translateX(-20px);
+	}
+	to {
+		opacity: 1;
+		transform: translateX(0);
+	}
+}

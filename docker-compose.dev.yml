@@ -1,0 +1,50 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: postgres_dev
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 111
+      POSTGRES_DB: BOOKSTORE
+    ports:
+      - "5432:5432"   # expose để dùng DBeaver, TablePlus...
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d BOOKSTORE"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./back-end
+      dockerfile: Dockerfile
+    container_name: backend_dev
+    restart: always
+    env_file:
+      - .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/BOOKSTORE
+      SPRING_PROFILES_ACTIVE: dev
+    ports:
+      - "8080:8080"   # expose để test Postman, Swagger...
+
+  frontend:
+    build:
+      context: ./front-end
+      dockerfile: Dockerfile
+    container_name: frontend_dev
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"   # expose để debug trực tiếp
+
+volumes:
+  postgres_data_dev:
