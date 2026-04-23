@@ -2,7 +2,7 @@ import {
     ExpandMore,
     Payments,
     PendingActions,
-    ReceiptLong,
+    ReceiptLong, Search,
     Visibility
 } from "@mui/icons-material";
 import {useEffect, useMemo, useState} from "react";
@@ -275,7 +275,7 @@ const OrderManagementPage = () => {
 
                         <form className="controls-card" onSubmit={handleApplyFilters}>
                             <div className="search-box">
-                                <span className="material-symbols-outlined search-icon">search</span>
+                                <span className="material-symbols-outlined search-icon"><Search/></span>
                                 <input
                                     type="text"
                                     className="search-input"

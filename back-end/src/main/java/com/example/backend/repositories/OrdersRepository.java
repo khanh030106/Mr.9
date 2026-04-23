@@ -60,4 +60,22 @@ public interface OrdersRepository extends JpaRepository<Order, Long> {
 	})
 	Optional<Order> findWithDetailsById(Long id);
 	// --- ADMIN ORDERS REFACTOR END: load full order graph for admin list/detail and actions ---
+
+	// --- ADMIN REVENUE START: load relations needed by revenue dashboard aggregations ---
+	@EntityGraph(attributePaths = {
+			"userID",
+			"orderItems",
+			"orderItems.bookID",
+			"orderItems.bookID.bookCategories",
+			"orderItems.bookID.bookCategories.categoryID"
+	})
+	List<Order> findAllWithRevenueDataByOrderByCreatedAtDesc();
+	// --- ADMIN REVENUE END: load relations needed by revenue dashboard aggregations ---
+
+	// --- ADMIN TOP CUSTOMER START: load user relation for top customer ranking ---
+	@EntityGraph(attributePaths = {
+			"userID"
+	})
+	List<Order> findAllWithUserByOrderByCreatedAtDesc();
+	// --- ADMIN TOP CUSTOMER END: load user relation for top customer ranking ---
 }

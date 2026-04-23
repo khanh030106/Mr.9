@@ -303,9 +303,6 @@ const CategoryManagementPage = () => {
                                         <tr className="kb-cm-table-row" key={category.id}>
                                             <td className="kb-cm-td">
                                                 <div className="kb-cm-category-cell">
-                                                    <div className={`kb-cm-category-icon ${canDelete ? "" : "kb-cm-icon-orange"}`}>
-                                                        <span className="material-symbols-outlined">category</span>
-                                                    </div>
                                                     <div>
                                                         <p className="kb-cm-category-name">{category.categoryName}</p>
                                                     </div>

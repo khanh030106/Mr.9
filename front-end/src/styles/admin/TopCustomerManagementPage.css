@@ -98,6 +98,9 @@
 	border-radius: 5px;
 	box-shadow: var(--tc-shadow-sm);
 	padding: 12px;
+	display: flex;
+	align-items: center;
+	gap: 8px;
 }
 
 .top-customer-page .search-icon {
@@ -130,6 +133,53 @@
 	background: #f0fdfa;
 }
 
+.top-customer-page .period-select {
+	height: 40px;
+	border: 1.5px solid var(--tc-border);
+	border-radius: 10px;
+	padding: 0 10px;
+	font-size: 0.86rem;
+	font-weight: 600;
+	color: #334155;
+	background: #ffffff;
+}
+
+.top-customer-page .period-select:focus {
+	outline: none;
+	border-color: #06b6d4;
+	box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.15);
+}
+
+.top-customer-page .search-btn {
+	height: 40px;
+	padding: 0 14px;
+	border: 1px solid var(--tc-border);
+	border-radius: 10px;
+	background: #ffffff;
+	color: var(--tc-primary-dark);
+	font-size: 0.84rem;
+	font-weight: 700;
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+.top-customer-page .search-btn:hover {
+	background: #eff6ff;
+	border-color: #bfdbfe;
+}
+
+.top-customer-page .search-btn.ghost {
+	color: var(--tc-text-soft);
+}
+
+.top-customer-page .tc-error-text {
+	margin: 8px 0 0;
+	min-height: 18px;
+	font-size: 0.84rem;
+	font-weight: 600;
+	color: #b91c1c;
+}
+
 .top-customer-page .podium-section {
 	display: grid;
 	grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -150,6 +200,17 @@
 	text-align: center;
 	gap: 10px;
 	overflow: hidden;
+}
+
+.top-customer-page .podium-empty {
+	width: 100%;
+	padding: 12px;
+	border-radius: 10px;
+	font-size: 0.9rem;
+	font-weight: 700;
+	color: var(--tc-text-soft);
+	background: #f8fafc;
+	border: 1px dashed #cbd5e1;
 }
 
 .top-customer-page .avatar-wrapper {
@@ -502,6 +563,16 @@
 	border-color: #bfdbfe;
 }
 
+.top-customer-page .pagination-btn:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.top-customer-page .pagination-btn:disabled:hover {
+	background: #ffffff;
+	border-color: var(--tc-border);
+}
+
 @media (max-width: 1120px) {
 	.top-customer-page .podium-section {
 		grid-template-columns: 1fr;
@@ -530,6 +601,14 @@
 	.top-customer-page .pagination-footer {
 		flex-direction: column;
 		align-items: flex-start;
+	}
+
+	.top-customer-page .search-wrapper {
+		flex-wrap: wrap;
+	}
+
+	.top-customer-page .search-input {
+		min-width: 220px;
 	}
 }
 

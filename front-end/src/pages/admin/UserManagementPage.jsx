@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Add, Close, Delete, Edit, ExpandMore, Restore, Search } from "@mui/icons-material";
+import {Add, Close, Delete, Edit, ExpandMore, Restore, Search, ToggleOff, ToggleOn} from "@mui/icons-material";
 import toast from "react-hot-toast";
 import {
     createAdminUser,
@@ -239,7 +239,7 @@ const UserManagementPage = () => {
 
     const handleToggleStatus = async (user) => {
         try {
-            await setAdminUserStatus(user.id, !Boolean(user.active));
+            await setAdminUserStatus(user.id, !user.active);  //!Boolean(user.active)
             toast.success("Cap nhat trang thai thanh cong.");
             await loadUsers();
         } catch (error) {
@@ -546,7 +546,7 @@ const UserManagementPage = () => {
                                                             onClick={() => handleToggleStatus(user)}
                                                         >
                                                             <span className="material-symbols-outlined um-action-icon">
-                                                                {user.active ? "toggle_on" : "toggle_off"}
+                                                                {user.active ? <ToggleOn/> : <ToggleOff/>}
                                                             </span>
                                                         </button>
                                                         <button

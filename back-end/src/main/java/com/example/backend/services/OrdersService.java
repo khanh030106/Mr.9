@@ -4,7 +4,9 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.time.YearMonth;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -22,11 +24,15 @@ import com.example.backend.dto.requests.AdminOrderStatusUpdateRequest;
 import com.example.backend.dto.requests.OrderActionRequest;
 import com.example.backend.dto.responseModel.AdminOrderDetailResponse;
 import com.example.backend.dto.responseModel.AdminOrderListResponse;
+import com.example.backend.dto.responseModel.AdminRevenueOverviewResponse;
+import com.example.backend.dto.responseModel.AdminTopCustomerResponse;
 import com.example.backend.dto.responseModel.OrderDetailResponse;
 import com.example.backend.dto.responseModel.OrderListResponse;
 import com.example.backend.entities.Book;
 import com.example.backend.entities.Bookauthor;
+import com.example.backend.entities.Bookcategory;
 import com.example.backend.entities.Bookimage;
+import com.example.backend.entities.Category;
 import com.example.backend.entities.Order;
 import com.example.backend.entities.Orderitem;
 import com.example.backend.entities.User;
@@ -37,6 +43,10 @@ import com.example.backend.repositories.UserRepository;
 @Service
 public class OrdersService {
 	private static final int DEFAULT_ADMIN_PAGE_SIZE = 5;
+	private static final int DEFAULT_REVENUE_CATEGORY_PAGE_SIZE = 5;
+	private static final int DEFAULT_TOP_CUSTOMER_PAGE_SIZE = 10;
+	private static final Long UNCATEGORIZED_ID = -1L;
+	private static final String UNCATEGORIZED_NAME = "Chua phan loai";
 	private static final String STATUS_PENDING = "PENDING";
 	private static final String STATUS_PROCESSING = "PROCESSING";
 	private static final String STATUS_SHIPPED = "SHIPPED";
@@ -179,6 +189,158 @@ public class OrdersService {
 		Order order = getOrderByIdOrThrow(orderId);
 		return toAdminOrderDetail(order);
 	}
+
+	// --- ADMIN TOP CUSTOMER START: aggregate top-customer ranking for admin page ---
+	@Transactional(readOnly = true)
+	public AdminTopCustomerResponse getAdminTopCustomers(String period, String keyword, int page, int size) {
+		String normalizedPeriod = normalizeTopCustomerPeriod(period);
+		String normalizedKeyword = keyword == null ? "" : keyword.trim().toLowerCase(Locale.ROOT);
+
+		int safePage = Math.max(0, page);
+		int safeSize = size <= 0 ? DEFAULT_TOP_CUSTOMER_PAGE_SIZE : Math.min(size, 50);
+
+		List<Order> orders = ordersRepository.findAllWithUserByOrderByCreatedAtDesc();
+		LocalDate fromDate = resolvePeriodFromDate(normalizedPeriod);
+
+		Map<Long, TopCustomerAccumulator> byCustomer = new LinkedHashMap<>();
+
+		for (Order order : orders) {
+			if (!STATUS_DELIVERED.equals(normalizeStatus(order.getCurrentStatus()))) {
+				continue;
+			}
+
+			LocalDate revenueDate = getRevenueDate(order);
+			if (revenueDate == null) {
+				continue;
+			}
+			if (fromDate != null && revenueDate.isBefore(fromDate)) {
+				continue;
+			}
+
+			User user = order.getUserID();
+			if (user == null || user.getId() == null) {
+				continue;
+			}
+
+			if (!matchesTopCustomerKeyword(user, normalizedKeyword)) {
+				continue;
+			}
+
+			TopCustomerAccumulator acc = byCustomer.computeIfAbsent(
+					user.getId(),
+					id -> new TopCustomerAccumulator(user)
+			);
+
+			BigDecimal orderTotal = order.getTotalAmount() == null ? BigDecimal.ZERO : order.getTotalAmount();
+			acc.totalSpend = acc.totalSpend.add(orderTotal);
+			acc.totalOrders += 1;
+		}
+
+		List<TopCustomerAccumulator> sortedCustomers = byCustomer.values().stream()
+				.filter(acc -> acc.totalOrders > 0)
+				.sorted(Comparator
+						.comparing((TopCustomerAccumulator acc) -> acc.totalSpend).reversed()
+						.thenComparing((TopCustomerAccumulator acc) -> acc.totalOrders, Comparator.reverseOrder())
+						.thenComparing(acc -> safeLower(acc.user.getFullName()))
+				)
+				.toList();
+
+		List<AdminTopCustomerResponse.TopCustomerRow> allRows = new ArrayList<>();
+		for (int i = 0; i < sortedCustomers.size(); i++) {
+			TopCustomerAccumulator acc = sortedCustomers.get(i);
+			allRows.add(toTopCustomerRow(acc, i + 1));
+		}
+
+		List<AdminTopCustomerResponse.TopCustomerRow> podium = allRows.stream()
+				.limit(3)
+				.toList();
+
+		long totalElements = allRows.size();
+		int totalPages = Math.max(1, (int) Math.ceil(totalElements / (double) safeSize));
+		int fromIndex = Math.min(safePage * safeSize, allRows.size());
+		int toIndex = Math.min(fromIndex + safeSize, allRows.size());
+		List<AdminTopCustomerResponse.TopCustomerRow> rankings = allRows.subList(fromIndex, toIndex);
+
+		return new AdminTopCustomerResponse(
+				normalizedPeriod,
+				safePage,
+				safeSize,
+				totalPages,
+				totalElements,
+				podium,
+				rankings
+		);
+	}
+	// --- ADMIN TOP CUSTOMER END: aggregate top-customer ranking for admin page ---
+
+	// --- ADMIN REVENUE START: monthly revenue dashboard aggregations for admin page ---
+	@Transactional(readOnly = true)
+	public AdminRevenueOverviewResponse getAdminRevenueOverview(Integer year, Integer month, int page, int size) {
+		YearMonth targetMonth = resolveTargetMonth(year, month);
+		YearMonth previousMonth = targetMonth.minusMonths(1);
+
+		int safePage = Math.max(0, page);
+		int safeSize = size <= 0 ? DEFAULT_REVENUE_CATEGORY_PAGE_SIZE : Math.min(size, 50);
+
+		List<Order> allOrders = ordersRepository.findAllWithRevenueDataByOrderByCreatedAtDesc();
+		List<Order> deliveredThisMonth = filterDeliveredOrdersInMonth(allOrders, targetMonth);
+		List<Order> deliveredPrevMonth = filterDeliveredOrdersInMonth(allOrders, previousMonth);
+
+		BigDecimal totalRevenue = sumOrderTotals(deliveredThisMonth);
+		BigDecimal previousRevenue = sumOrderTotals(deliveredPrevMonth);
+
+		long totalQuantity = sumSoldQuantity(deliveredThisMonth);
+		long previousQuantity = sumSoldQuantity(deliveredPrevMonth);
+
+		BigDecimal averageOrderValue = averageOrderValue(totalRevenue, deliveredThisMonth.size());
+		BigDecimal previousAverageOrderValue = averageOrderValue(previousRevenue, deliveredPrevMonth.size());
+
+		long newCustomers = countNewCustomersInMonth(targetMonth);
+		long previousNewCustomers = countNewCustomersInMonth(previousMonth);
+
+		AdminRevenueOverviewResponse.RevenueSummary summary = new AdminRevenueOverviewResponse.RevenueSummary(
+				totalRevenue,
+				totalQuantity,
+				averageOrderValue,
+				newCustomers,
+				calculateGrowthPercent(totalRevenue, previousRevenue),
+				calculateGrowthPercent(BigDecimal.valueOf(totalQuantity), BigDecimal.valueOf(previousQuantity)),
+				calculateGrowthPercent(averageOrderValue, previousAverageOrderValue),
+				calculateGrowthPercent(BigDecimal.valueOf(newCustomers), BigDecimal.valueOf(previousNewCustomers))
+		);
+
+		Map<Long, CategoryAccumulator> categoryMap = buildCategoryAccumulators(deliveredThisMonth);
+		List<AdminRevenueOverviewResponse.CategoryRevenueRow> allCategoryRows = categoryMap.values().stream()
+				.map(this::toCategoryRevenueRow)
+				.sorted(Comparator
+						.comparing(AdminRevenueOverviewResponse.CategoryRevenueRow::getTotalRevenue).reversed()
+						.thenComparing(AdminRevenueOverviewResponse.CategoryRevenueRow::getTotalQuantity, Comparator.reverseOrder())
+				)
+				.toList();
+
+		long totalCategoryElements = allCategoryRows.size();
+		int totalCategoryPages = Math.max(1, (int) Math.ceil(totalCategoryElements / (double) safeSize));
+		int fromIndex = Math.min(safePage * safeSize, allCategoryRows.size());
+		int toIndex = Math.min(fromIndex + safeSize, allCategoryRows.size());
+		List<AdminRevenueOverviewResponse.CategoryRevenueRow> categoryRows = allCategoryRows.subList(fromIndex, toIndex);
+
+		List<AdminRevenueOverviewResponse.RevenueTrendPoint> trendByDay = buildDailyTrend(deliveredThisMonth, targetMonth);
+		List<AdminRevenueOverviewResponse.CategoryContribution> contributions = buildContributions(allCategoryRows);
+
+		return new AdminRevenueOverviewResponse(
+				targetMonth.getYear(),
+				targetMonth.getMonthValue(),
+				safePage,
+				safeSize,
+				totalCategoryPages,
+				totalCategoryElements,
+				summary,
+				categoryRows,
+				trendByDay,
+				contributions
+		);
+	}
+	// --- ADMIN REVENUE END: monthly revenue dashboard aggregations for admin page ---
 
 	@Transactional
 	public AdminOrderDetailResponse updateAdminOrderStatus(Long orderId, AdminOrderStatusUpdateRequest request) {
@@ -675,5 +837,293 @@ public class OrdersService {
 			default -> STATUS_PENDING;
 		};
 	}
+
+	// --- ADMIN TOP CUSTOMER START: helper methods for ranking and filtering ---
+	private String normalizeTopCustomerPeriod(String rawPeriod) {
+		if (rawPeriod == null || rawPeriod.isBlank()) {
+			return "ALL";
+		}
+
+		String normalized = rawPeriod.trim().toUpperCase(Locale.ROOT);
+		return switch (normalized) {
+			case "ALL", "WEEK", "MONTH", "YEAR" -> normalized;
+			default -> "ALL";
+		};
+	}
+
+	private LocalDate resolvePeriodFromDate(String period) {
+		LocalDate today = LocalDate.now();
+		return switch (period) {
+			case "WEEK" -> today.minusDays(6);
+			case "MONTH" -> today.minusMonths(1).plusDays(1);
+			case "YEAR" -> today.minusYears(1).plusDays(1);
+			default -> null;
+		};
+	}
+
+	private boolean matchesTopCustomerKeyword(User user, String keyword) {
+		if (keyword == null || keyword.isBlank()) {
+			return true;
+		}
+
+		String userIdText = user.getId() == null ? "" : String.valueOf(user.getId());
+		String name = safeLower(user.getFullName());
+		String email = safeLower(user.getEmail());
+
+		return userIdText.contains(keyword)
+				|| name.contains(keyword)
+				|| email.contains(keyword);
+	}
+
+	private String safeLower(String text) {
+		if (text == null) {
+			return "";
+		}
+		return text.toLowerCase(Locale.ROOT);
+	}
+
+	private AdminTopCustomerResponse.TopCustomerRow toTopCustomerRow(TopCustomerAccumulator acc, int rank) {
+		BigDecimal avgOrderValue = acc.totalOrders <= 0
+				? BigDecimal.ZERO
+				: acc.totalSpend.divide(BigDecimal.valueOf(acc.totalOrders), 0, RoundingMode.HALF_UP);
+
+		return new AdminTopCustomerResponse.TopCustomerRow(
+				acc.user.getId(),
+				rank,
+				acc.user.getFullName(),
+				acc.user.getEmail(),
+				acc.user.getAvatar(),
+				acc.totalOrders,
+				avgOrderValue,
+				acc.totalSpend.setScale(0, RoundingMode.HALF_UP)
+		);
+	}
+
+	private static class TopCustomerAccumulator {
+		private final User user;
+		private long totalOrders = 0;
+		private BigDecimal totalSpend = BigDecimal.ZERO;
+
+		private TopCustomerAccumulator(User user) {
+			this.user = user;
+		}
+	}
+	// --- ADMIN TOP CUSTOMER END: helper methods for ranking and filtering ---
+
+	// --- ADMIN REVENUE START: helper methods for monthly aggregations ---
+	private YearMonth resolveTargetMonth(Integer year, Integer month) {
+		YearMonth now = YearMonth.now();
+		int safeYear = year == null ? now.getYear() : year;
+		int safeMonth = month == null ? now.getMonthValue() : month;
+
+		if (safeMonth < 1 || safeMonth > 12) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Month must be between 1 and 12");
+		}
+		if (safeYear < 2000 || safeYear > 3000) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Year is out of supported range");
+		}
+
+		return YearMonth.of(safeYear, safeMonth);
+	}
+
+	private List<Order> filterDeliveredOrdersInMonth(List<Order> orders, YearMonth targetMonth) {
+		return orders.stream()
+				.filter(order -> STATUS_DELIVERED.equals(normalizeStatus(order.getCurrentStatus())))
+				.filter(order -> getRevenueDate(order) != null)
+				.filter(order -> YearMonth.from(getRevenueDate(order)).equals(targetMonth))
+				.toList();
+	}
+
+	private LocalDate getRevenueDate(Order order) {
+		if (order == null) {
+			return null;
+		}
+		OffsetDateTime effectiveDate = order.getCompletedAt() != null ? order.getCompletedAt() : order.getCreatedAt();
+		if (effectiveDate == null) {
+			return null;
+		}
+		return effectiveDate.toLocalDate();
+	}
+
+	private BigDecimal sumOrderTotals(List<Order> orders) {
+		return orders.stream()
+				.map(order -> order.getTotalAmount() == null ? BigDecimal.ZERO : order.getTotalAmount())
+				.reduce(BigDecimal.ZERO, BigDecimal::add)
+				.setScale(0, RoundingMode.HALF_UP);
+	}
+
+	private long sumSoldQuantity(List<Order> orders) {
+		return orders.stream()
+				.flatMap(order -> order.getOrderItems().stream())
+				.mapToLong(item -> item.getQuantity() == null ? 0L : item.getQuantity())
+				.sum();
+	}
+
+	private BigDecimal averageOrderValue(BigDecimal totalRevenue, int orderCount) {
+		if (orderCount <= 0) {
+			return BigDecimal.ZERO;
+		}
+		return totalRevenue.divide(BigDecimal.valueOf(orderCount), 0, RoundingMode.HALF_UP);
+	}
+
+	private long countNewCustomersInMonth(YearMonth month) {
+		return userRepository.findAll().stream()
+				.filter(user -> user.getCreatedAt() != null)
+				.filter(user -> YearMonth.from(user.getCreatedAt().toLocalDate()).equals(month))
+				.count();
+	}
+
+	private BigDecimal calculateGrowthPercent(BigDecimal current, BigDecimal previous) {
+		BigDecimal safeCurrent = current == null ? BigDecimal.ZERO : current;
+		BigDecimal safePrevious = previous == null ? BigDecimal.ZERO : previous;
+
+		if (safePrevious.compareTo(BigDecimal.ZERO) == 0) {
+			if (safeCurrent.compareTo(BigDecimal.ZERO) == 0) {
+				return BigDecimal.ZERO;
+			}
+			return BigDecimal.valueOf(100);
+		}
+
+		return safeCurrent.subtract(safePrevious)
+				.multiply(BigDecimal.valueOf(100))
+				.divide(safePrevious, 1, RoundingMode.HALF_UP);
+	}
+
+	private Map<Long, CategoryAccumulator> buildCategoryAccumulators(List<Order> orders) {
+		Map<Long, CategoryAccumulator> map = new LinkedHashMap<>();
+
+		for (Order order : orders) {
+			for (Orderitem item : order.getOrderItems()) {
+				Book book = item.getBookID();
+				Category category = resolvePrimaryCategory(book);
+
+				Long categoryId = category == null ? UNCATEGORIZED_ID : category.getId();
+				String categoryName = category == null ? UNCATEGORIZED_NAME : category.getCategoryName();
+
+				CategoryAccumulator acc = map.computeIfAbsent(
+						categoryId,
+						id -> new CategoryAccumulator(id, categoryName)
+				);
+
+				BigDecimal unitPrice = item.getPrice() == null ? BigDecimal.ZERO : item.getPrice();
+				long quantity = item.getQuantity() == null ? 0L : item.getQuantity();
+				BigDecimal lineRevenue = unitPrice.multiply(BigDecimal.valueOf(quantity));
+
+				acc.totalRevenue = acc.totalRevenue.add(lineRevenue);
+				acc.totalQuantity += quantity;
+				acc.highestPrice = acc.highestPrice.max(unitPrice);
+
+				if (acc.lowestPrice == null || unitPrice.compareTo(acc.lowestPrice) < 0) {
+					acc.lowestPrice = unitPrice;
+				}
+			}
+		}
+
+		return map;
+	}
+
+	private Category resolvePrimaryCategory(Book book) {
+		if (book == null || book.getBookCategories() == null || book.getBookCategories().isEmpty()) {
+			return null;
+		}
+
+		// Use a stable primary category so each sold item contributes to exactly one bucket.
+		return book.getBookCategories().stream()
+				.map(Bookcategory::getCategoryID)
+				.filter(Objects::nonNull)
+				.filter(category -> !Boolean.TRUE.equals(category.getIsDeleted()))
+				.min(Comparator.comparing(Category::getId))
+				.orElse(null);
+	}
+
+	private AdminRevenueOverviewResponse.CategoryRevenueRow toCategoryRevenueRow(CategoryAccumulator acc) {
+		BigDecimal safeRevenue = acc.totalRevenue.setScale(0, RoundingMode.HALF_UP);
+		BigDecimal avgPrice;
+		if (acc.totalQuantity <= 0) {
+			avgPrice = BigDecimal.ZERO;
+		} else {
+			avgPrice = safeRevenue.divide(BigDecimal.valueOf(acc.totalQuantity), 0, RoundingMode.HALF_UP);
+		}
+
+		return new AdminRevenueOverviewResponse.CategoryRevenueRow(
+				acc.categoryId,
+				acc.categoryName,
+				safeRevenue,
+				acc.totalQuantity,
+				acc.highestPrice == null ? BigDecimal.ZERO : acc.highestPrice.setScale(0, RoundingMode.HALF_UP),
+				acc.lowestPrice == null ? BigDecimal.ZERO : acc.lowestPrice.setScale(0, RoundingMode.HALF_UP),
+				avgPrice
+		);
+	}
+
+	private List<AdminRevenueOverviewResponse.RevenueTrendPoint> buildDailyTrend(List<Order> orders, YearMonth targetMonth) {
+		Map<Integer, BigDecimal> revenueByDay = new LinkedHashMap<>();
+		for (int day = 1; day <= targetMonth.lengthOfMonth(); day++) {
+			revenueByDay.put(day, BigDecimal.ZERO);
+		}
+
+		for (Order order : orders) {
+			LocalDate revenueDate = getRevenueDate(order);
+			if (revenueDate == null || !YearMonth.from(revenueDate).equals(targetMonth)) {
+				continue;
+			}
+
+			BigDecimal value = order.getTotalAmount() == null ? BigDecimal.ZERO : order.getTotalAmount();
+			int day = revenueDate.getDayOfMonth();
+			revenueByDay.put(day, revenueByDay.get(day).add(value));
+		}
+
+		List<AdminRevenueOverviewResponse.RevenueTrendPoint> points = new ArrayList<>();
+		for (Map.Entry<Integer, BigDecimal> entry : revenueByDay.entrySet()) {
+			int day = entry.getKey();
+			points.add(new AdminRevenueOverviewResponse.RevenueTrendPoint(
+					day,
+					String.format("%02d", day),
+					entry.getValue().setScale(0, RoundingMode.HALF_UP)
+			));
+		}
+		return points;
+	}
+
+	private List<AdminRevenueOverviewResponse.CategoryContribution> buildContributions(
+			List<AdminRevenueOverviewResponse.CategoryRevenueRow> rows
+	) {
+		BigDecimal total = rows.stream()
+				.map(AdminRevenueOverviewResponse.CategoryRevenueRow::getTotalRevenue)
+				.reduce(BigDecimal.ZERO, BigDecimal::add);
+
+		return rows.stream()
+				.limit(6)
+				.map(row -> {
+					BigDecimal percentage = total.compareTo(BigDecimal.ZERO) == 0
+							? BigDecimal.ZERO
+							: row.getTotalRevenue()
+									.multiply(BigDecimal.valueOf(100))
+									.divide(total, 1, RoundingMode.HALF_UP);
+
+					return new AdminRevenueOverviewResponse.CategoryContribution(
+							row.getCategoryId(),
+							row.getCategoryName(),
+							row.getTotalRevenue(),
+							percentage
+					);
+				})
+				.toList();
+	}
+
+	private static class CategoryAccumulator {
+		private final Long categoryId;
+		private final String categoryName;
+		private BigDecimal totalRevenue = BigDecimal.ZERO;
+		private long totalQuantity = 0;
+		private BigDecimal highestPrice = BigDecimal.ZERO;
+		private BigDecimal lowestPrice = null;
+
+		private CategoryAccumulator(Long categoryId, String categoryName) {
+			this.categoryId = categoryId;
+			this.categoryName = categoryName;
+		}
+	}
+	// --- ADMIN REVENUE END: helper methods for monthly aggregations ---
 	// === REFACTOR END: expose current user's order list + count-by-status for order tabs ===
 }

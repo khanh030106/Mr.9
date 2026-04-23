@@ -13,10 +13,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+
 import com.example.backend.dto.requests.AdminOrderStatusUpdateRequest;
 import com.example.backend.dto.requests.OrderActionRequest;
 import com.example.backend.dto.responseModel.AdminOrderDetailResponse;
 import com.example.backend.dto.responseModel.AdminOrderListResponse;
+import com.example.backend.dto.responseModel.AdminRevenueOverviewResponse;
+import com.example.backend.dto.responseModel.AdminTopCustomerResponse;
 import com.example.backend.dto.responseModel.OrderDetailResponse;
 import com.example.backend.dto.responseModel.OrderListResponse;
 import com.example.backend.services.OrdersService;
@@ -82,6 +85,34 @@ public class OrdersController {
 		assertAdmin(userDetails);
 		return ResponseEntity.ok(ordersService.getAdminOrderDetail(orderId));
 	}
+
+	// --- ADMIN REVENUE START: endpoint backing admin revenue dashboard ---
+	@GetMapping("/admin/revenue")
+	public ResponseEntity<AdminRevenueOverviewResponse> getAdminRevenueOverview(
+			@AuthenticationPrincipal UserDetails userDetails,
+			@RequestParam(name = "year", required = false) Integer year,
+			@RequestParam(name = "month", required = false) Integer month,
+			@RequestParam(name = "page", defaultValue = "0") int page,
+			@RequestParam(name = "size", defaultValue = "5") int size
+	) {
+		assertAdmin(userDetails);
+		return ResponseEntity.ok(ordersService.getAdminRevenueOverview(year, month, page, size));
+	}
+	// --- ADMIN REVENUE END: endpoint backing admin revenue dashboard ---
+
+	// --- ADMIN TOP CUSTOMER START: endpoint backing admin top-customer dashboard ---
+	@GetMapping("/admin/top-customers")
+	public ResponseEntity<AdminTopCustomerResponse> getAdminTopCustomers(
+			@AuthenticationPrincipal UserDetails userDetails,
+			@RequestParam(name = "period", required = false, defaultValue = "ALL") String period,
+			@RequestParam(name = "keyword", required = false) String keyword,
+			@RequestParam(name = "page", defaultValue = "0") int page,
+			@RequestParam(name = "size", defaultValue = "10") int size
+	) {
+		assertAdmin(userDetails);
+		return ResponseEntity.ok(ordersService.getAdminTopCustomers(period, keyword, page, size));
+	}
+	// --- ADMIN TOP CUSTOMER END: endpoint backing admin top-customer dashboard ---
 
 	@PatchMapping("/admin/{orderId}/status")
 	public ResponseEntity<AdminOrderDetailResponse> updateAdminOrderStatus(

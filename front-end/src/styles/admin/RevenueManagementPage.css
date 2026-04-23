@@ -82,6 +82,30 @@
 	line-height: 1.5;
 }
 
+.revenue-management-page .admin-month-switcher {
+	margin-top: 10px;
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.revenue-management-page .admin-month-label {
+	font-size: 0.9rem;
+	font-weight: 700;
+	color: var(--rm-text);
+	min-width: 140px;
+	text-align: center;
+	text-transform: capitalize;
+}
+
+.revenue-management-page .admin-error-text {
+	margin: 8px 0 0;
+	min-height: 18px;
+	font-size: 0.84rem;
+	font-weight: 600;
+	color: #b91c1c;
+}
+
 .revenue-management-page .admin-stats-grid {
 	display: grid;
 	grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -343,28 +367,40 @@
 }
 
 .revenue-management-page .admin-bar-chart {
-	height: 190px;
+	height: 220px;
 	display: flex;
 	align-items: flex-end;
 	padding: 10px;
 	border: 1px dashed #cbd5e1;
 	border-radius: 10px;
 	background: linear-gradient(180deg, #f8fbff, #ffffff);
+	overflow-x: auto;
+	gap: 8px;
 }
 
 .revenue-management-page .admin-bar {
-	width: 100%;
+	min-width: 20px;
 	height: 100%;
 	display: flex;
 	align-items: flex-end;
+	justify-content: flex-end;
+	flex-direction: column;
+	gap: 4px;
 }
 
 .revenue-management-page .admin-bar-fill {
-	width: 52px;
+	width: 100%;
 	height: 52%;
 	border-radius: 8px 8px 2px 2px;
 	background: linear-gradient(180deg, var(--rm-primary), var(--rm-secondary));
 	box-shadow: 0 8px 16px rgba(37, 99, 235, 0.28);
+}
+
+.revenue-management-page .admin-bar-day {
+	font-size: 0.72rem;
+	font-weight: 700;
+	color: var(--rm-text-soft);
+	line-height: 1;
 }
 
 .revenue-management-page .admin-chart-labels {

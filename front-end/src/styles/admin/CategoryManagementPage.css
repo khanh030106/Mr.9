@@ -309,6 +309,7 @@
 .kb-cm-parent-text {
 	font-size: 0.9rem;
 	color: var(--kb-cm-text-soft);
+	text-align: center;
 }
 
 .kb-cm-total {

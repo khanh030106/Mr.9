@@ -31,7 +31,6 @@ const INITIAL_FORM = {
 };
 
 const BookManagementPage = () => {
-    // --- ADMIN BOOK MANAGEMENT UI START: list + modal form add/edit/delete with API integration ---
     const [books, setBooks] = useState([]);
     const [options, setOptions] = useState({publishers: [], authors: [], categories: []});
     const [isLoading, setIsLoading] = useState(true);
@@ -322,7 +321,9 @@ const BookManagementPage = () => {
                                                maxLength="150"
                                                placeholder="Or type a new publisher name"
                                                value={formData.newPublisherName}
-                                               onChange={(e) => setFormData((prev) => ({...prev, newPublisherName: e.target.value}))}/>
+                                               onChange={(e) => setFormData((prev) => ({...prev, newPublisherName: e.target.value}))}
+                                               style={{marginTop:'21px'}}
+                                        />
                                     </div>
 
                                     <div className="kb-inv-form-group">
@@ -330,14 +331,15 @@ const BookManagementPage = () => {
                                         <input id="publishYear" className="kb-inv-form-input"
                                                type="number" min="0" max="3000" value={formData.publishYear}
                                                onChange={(e) => setFormData((prev) => ({...prev, publishYear: e.target.value}))}/>
-                                    </div>
 
-                                    <div className="kb-inv-form-group">
+
                                         <label className="kb-inv-form-label" htmlFor="language">Language</label>
                                         <input id="language" className="kb-inv-form-input"
                                                type="text" maxLength="50" value={formData.language}
                                                onChange={(e) => setFormData((prev) => ({...prev, language: e.target.value}))}/>
                                     </div>
+
+
 
                                     <div className="kb-inv-form-group">
                                         <label className="kb-inv-form-label" htmlFor="authorIds">Authors</label>
