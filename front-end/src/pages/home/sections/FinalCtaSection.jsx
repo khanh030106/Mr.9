@@ -2,14 +2,14 @@ import {Link} from "react-router-dom";
 
 const FinalCtaSection = () => {
     return (
-        <section className="final-cta" aria-label="Continue exploring books">
+        <section className="final-cta" aria-label="Tiếp tục khám phá sách">
             <div className="final-cta__inner">
-                <h2 className="final-cta__title">Find your next favorite book</h2>
+                <h2 className="final-cta__title">Tìm cuốn sách yêu thích tiếp theo của bạn</h2>
                 <p className="final-cta__description">
-                    Explore fresh arrivals, timeless bestsellers, and curated picks crafted for your reading journey.
+                    Khám phá những cuốn sách mới đến, những cuốn sách bán chạy kinh điển, và những lựa chọn được tuyển chọn dành cho hành trình đọc sách của bạn.
                 </p>
                 <Link className="final-cta__button" to="/bookseller/allbook">
-                    Browse all books
+                    Duyệt tất cả sách
                 </Link>
             </div>
         </section>

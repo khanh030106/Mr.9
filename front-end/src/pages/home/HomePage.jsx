@@ -18,7 +18,7 @@ const HomePage = () => {
     });
 
     useEffect(() =>{
-        document.title = "BookStore-HomePage"
+        document.title = "Cửa Hàng Sách - Trang Chủ"
         console.log(import.meta.env.VITE_API_URL);
         getHomeData().then(data => {
             const {top10SoldOutBooks, promotionBooks, activeBooks} = data;
@@ -36,13 +36,12 @@ const HomePage = () => {
                 <div className="hero-background">
                     <HeroSection/>
                 </div>
-                <BenefitsSection/>
             </section>
             <main>
                 <section className="products_area">
                     <ProductSection
-                        title="PROMOTION BOOKS"
-                        subtitle="Explore our exclusive collection of promotion books, offering incredible discounts and special offers on a wide range of titles."
+                        title="SÁCH KHUYẾN MÃI"
+                        subtitle="Khám phá bộ sưu tập sách khuyến mãi độc quyền của chúng tôi, cung cấp chiết khấu đáng kinh ngạc và ưu đãi đặc biệt trên nhiều tiêu đề."
                         books={HomeData.promotionBooks}
                         loadMoreLink="/bookseller/allbook"
                     />
@@ -52,8 +51,8 @@ const HomePage = () => {
                 </section>
                 <section className="products_area">
                     <ProductSection
-                        title="TOP SOLD OUT BOOKS"
-                        subtitle="Discover our best-selling books that have captivated readers worldwide."
+                        title="SÁCH BÁN CHẠY NHẤT"
+                        subtitle="Khám phá những cuốn sách bán chạy nhất của chúng tôi đã thu hút độc giả trên toàn thế giới."
                         books={HomeData.topSoldOutBooks}
                         loadMoreLink="/bookseller/allbook"
                     />
@@ -63,8 +62,8 @@ const HomePage = () => {
                 </section>
                 <section className="products_area">
                     <ProductSection
-                        title="OTHER OUT BOOKS"
-                        subtitle="Explore our collection of other out books, featuring a diverse range of titles that have captured the hearts of readers worldwide."
+                        title="SÁCH KHÁC"
+                        subtitle="Khám phá bộ sưu tập sách khác của chúng tôi, có nhiều tiêu đề đa dạng đã chinh phục trái tim độc giả trên toàn thế giới."
                         books={HomeData.activeBooks}
                         loadMoreLink="/bookseller/allbook"
                     />

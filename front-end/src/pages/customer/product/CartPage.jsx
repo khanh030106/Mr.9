@@ -175,150 +175,131 @@ const CartPage = () => {
     return (
         <>
             <main className="kb-main">
-                <div className="kb-grid">
-                    <div className="kb-cart-items">
-                        <div className="kb-cart-header">
-                            <div>Product</div>
-                            <div>Price</div>
-                            <div>Quantity</div>
-                            <div>Subtotal</div>
-                        </div>
+                <div className="kb-cart-container">
+                    <div className="kb-cart-items-section">
+                        <h1 className="kb-cart-title">Giỏ Hàng Của Bạn</h1>
 
-                        {removeError ? <p style={{ color: "red" }}>{removeError}</p> : null}
+                        {removeError ? <p className="kb-error-message">{removeError}</p> : null}
 
-                        <div className="kb-product-grid">
-                            {cartItems.length === 0 ? (
-                                <p>EMPTY CART</p>
-                            ) : (
-                                pagedItems.map(item => (
-                                    <div className="kb-cart-item" key={item.bookId}>
-                                        <div className="kb-product-info">
-                                            <div className="kb-product-image">
+                        {cartItems.length === 0 ? (
+                            <div className="kb-empty-cart">
+                                <p>Giỏ hàng của bạn đang trống</p>
+                                <Link to="/bookseller/allbook" className="kb-continue-shopping-btn">
+                                    Tiếp tục mua sắm
+                                </Link>
+                            </div>
+                        ) : (
+                            <>
+                                <div className="kb-cards-grid">
+                                    {pagedItems.map(item => (
+                                        <div className="kb-cart-card" key={item.bookId}>
+                                            <div className="kb-card-image">
                                                 <img src={getBookImage(item.imageUrl)} alt={item.title} />
                                             </div>
-                                            <div className="kb-product-details">
-                                                <h3 className="kb-product-title">{item.title}</h3>
-                                                <p className="kb-product-author">{item.authorName}</p>
-                                                <button
-                                                    type="button"
-                                                    className="kb-remove-btn-mobile"
-                                                    onClick={() => handleRemoveItem(item.bookId)}
-                                                    disabled={removingId === item.bookId || qtyBusyId === item.bookId}
-                                                >
-                                                    <span className="material-icons-outlined"><Delete /></span>
-                                                    Remove
-                                                </button>
+                                            <div className="kb-card-content">
+                                                <h3 className="kb-card-title">{item.title}</h3>
+                                                <p className="kb-card-author">{item.authorName}</p>
+                                                
+                                                <div className="kb-card-pricing">
+                                                    <div className="kb-price-info">
+                                                        <span className="kb-price-label">Giá:</span>
+                                                        <span className="kb-price-value">{formatPrice(item.finalPrice)}đ</span>
+                                                    </div>
+                                                    <div className="kb-subtotal-info">
+                                                        <span className="kb-subtotal-label">Thành tiền:</span>
+                                                        <span className="kb-subtotal-value">{formatPrice(item.finalPrice * item.quantity)}đ</span>
+                                                    </div>
+                                                </div>
+
+                                                <div className="kb-card-controls">
+                                                    <div className="kb-quantity-control">
+                                                        <button
+                                                            type="button"
+                                                            className="kb-qty-btn kb-qty-minus"
+                                                            onClick={() => handleQtyDelta(item, -1)}
+                                                            disabled={qtyBusyId === item.bookId || removingId === item.bookId}
+                                                            aria-label="Giảm số lượng"
+                                                        >−</button>
+                                                        <span className="kb-qty-value">{item.quantity}</span>
+                                                        <button
+                                                            type="button"
+                                                            className="kb-qty-btn kb-qty-plus"
+                                                            onClick={() => handleQtyDelta(item, 1)}
+                                                            disabled={qtyBusyId === item.bookId || removingId === item.bookId}
+                                                            aria-label="Tăng số lượng"
+                                                        >+</button>
+                                                    </div>
+                                                    <button
+                                                        className="kb-card-remove-btn"
+                                                        title="Xóa sản phẩm"
+                                                        onClick={() => handleRemoveItem(item.bookId)}
+                                                        disabled={removingId === item.bookId}
+                                                        type="button"
+                                                    >
+                                                        <Delete fontSize="small" />
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
+                                    ))}
+                                </div>
 
-                                        <div className="kb-price-section">
-                                            <span className="kb-section-label">Price:</span>
-                                            <span className="kb-price">{formatPrice(item.finalPrice)}đ</span>
-                                        </div>
+                                {cartItems.length > CART_ITEMS_PER_PAGE ? (
+                                    <nav className="kb-cart-pagination" aria-label="Phân trang giỏ hàng">
+                                        <button
+                                            type="button"
+                                            className="kb-pagination-btn"
+                                            onClick={() => setListPage((p) => Math.max(0, p - 1))}
+                                            disabled={listPage <= 0}
+                                        >
+                                            ← Trước
+                                        </button>
+                                        <span className="kb-pagination-info">
+                                            Trang {listPage + 1} / {pageCount}
+                                        </span>
+                                        <button
+                                            type="button"
+                                            className="kb-pagination-btn"
+                                            onClick={() => setListPage((p) => Math.min(pageCount - 1, p + 1))}
+                                            disabled={listPage >= pageCount - 1}
+                                        >
+                                            Tiếp → 
+                                        </button>
+                                    </nav>
+                                ) : null}
+                            </>
+                        )}
+                    </div>
 
-                                        <div className="kb-quantity-section">
-                                            <span className="kb-section-label">Quantity:</span>
-                                            <div className="kb-quantity-control">
-                                                <button
-                                                    type="button"
-                                                    className="minus-btn"
-                                                    onClick={() => handleQtyDelta(item, -1)}
-                                                    disabled={qtyBusyId === item.bookId || removingId === item.bookId}
-                                                    aria-label="Giảm số lượng"
-                                                >-</button>
-                                                <span className="quantity-value">{item.quantity}</span>
-                                                <button
-                                                    type="button"
-                                                    className="plus-btn"
-                                                    onClick={() => handleQtyDelta(item, 1)}
-                                                    disabled={qtyBusyId === item.bookId || removingId === item.bookId}
-                                                    aria-label="Tăng số lượng"
-                                                >+</button>
-                                            </div>
-                                        </div>
-
-                                        <div className="kb-subtotal-section">
-                                            <span className="kb-section-label">Subtotal:</span>
-                                            <div className="kb-subtotal-content">
-                                                <span className="kb-subtotal-price">
-                                                    {formatPrice(item.finalPrice * item.quantity)}đ
-                                                </span>
-                                                <button
-                                                    className="kb-remove-btn"
-                                                    title="Remove item"
-                                                    onClick={() => handleRemoveItem(item.bookId)}
-                                                    disabled={removingId === item.bookId}
-                                                    type="button"
-                                                >
-                                                <span className="material-icons-outlined">
-                                                    <Delete />
-                                                </span>
-                                                </button>
-                                            </div>
-                                        </div>
+                    {cartItems.length > 0 && (
+                        <div className="kb-cart-summary">
+                            <div className="kb-summary-card">
+                                <h2 className="kb-summary-title">Tóm Tắt Đơn Hàng</h2>
+                                <div className="kb-summary-breakdown">
+                                    <div className="kb-summary-row">
+                                        <span>Tổng phụ</span>
+                                        <span className="kb-summary-value">{formatPrice(subtotal)}đ</span>
                                     </div>
-                                ))
-                            )}
-
-                        </div>
-
-                        {cartItems.length > CART_ITEMS_PER_PAGE ? (
-                            <nav className="kb-cart-pagination" aria-label="Phân trang giỏ hàng">
-                                <Link to="/bookseller/home" className="kb-continue-shopping">
+                                    <div className="kb-summary-row">
+                                        <span>Giao hàng</span>
+                                        <span className="kb-summary-value">Miễn phí</span>
+                                    </div>
+                                    <div className="kb-summary-divider"></div>
+                                    <div className="kb-summary-total">
+                                        <span>Tổng cộng</span>
+                                        <span className="kb-total-amount">{formatPrice(subtotal)}đ</span>
+                                    </div>
+                                </div>
+                                <button type="button" className="kb-checkout-btn" onClick={handleProceedToCheckout}>
+                                    Tiến Hành Thanh Toán
+                                </button>
+                                <Link to="/bookseller/allbook" className="kb-continue-link">
                                     <span className="material-icons-outlined"><ArrowBack/></span>
-                                    Back to shopping
+                                    Tiếp tục mua sắm
                                 </Link>
-                                <button
-                                    type="button"
-                                    className="kb-cart-pagination__btn"
-                                    onClick={() => setListPage((p) => Math.max(0, p - 1))}
-                                    disabled={listPage <= 0}
-                                >
-                                    Previous
-                                </button>
-                                <span className="kb-cart-pagination__info">
-                                    Page {listPage + 1} / {pageCount}
-                                </span>
-                                <button
-                                    type="button"
-                                    className="kb-cart-pagination__btn"
-                                    onClick={() => setListPage((p) => Math.min(pageCount - 1, p + 1))}
-                                    disabled={listPage >= pageCount - 1}
-                                >
-                                    Next
-                                </button>
-                            </nav>
-                        ) : null}
-
-
-                    </div>
-
-                    <div className="kb-cart-summary">
-                        <div className="kb-summary-card">
-                            <h2 className="kb-summary-title">Cart Totals</h2>
-                            <div className="kb-summary-details">
-                                <div className="kb-summary-row">
-                                    <span>Subtotal</span>
-                                    <span className="kb-summary-value" id="cart-subtotal-value">{formatPrice(subtotal)}</span>
-                                </div>
-                                <div className="kb-summary-row">
-                                    <span>Shipping</span>
-                                    <span className="kb-summary-small">Calculated at
-                                    checkout</span>
-                                </div>
                             </div>
-                            <div className="kb-summary-total">
-                                <div className="kb-total-row">
-                                    <span className="kb-total-label">Total</span>
-                                    <span className="kb-total-price" id="cart-total-price">{formatPrice(subtotal)}</span>
-                                </div>
-                                <p className="kb-vat-note">Including VAT</p>
-                            </div>
-                            <button type="button" className="kb-checkout-btn" onClick={handleProceedToCheckout}>Proceed to
-                                Checkout
-                            </button>
                         </div>
-                    </div>
+                    )}
                 </div>
             </main>
         </>

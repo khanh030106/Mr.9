@@ -1,54 +1,26 @@
-/* Order page visual style aligned with LoginPage */
+/* Order page visual style aligned with LoginPage - Brown Color Scheme */
 
 .kb-container .kb-main {
-	--or-primary: #2563eb;
-	--or-primary-dark: #1d4ed8;
-	--or-secondary: #f97316;
-	--or-secondary-dark: #ea580c;
-	--or-text-primary: #253455;
-	--or-text-secondary: #1e2a3c;
-	--or-text-light: #6b7280;
-	--or-border: #e5e7eb;
-	--or-bg: #f3f4f6;
+	--or-primary: #8B6F47;
+	--or-primary-dark: #6B4423;
+	--or-secondary: #A0826D;
+	--or-secondary-dark: #7A5838;
+	--or-text-primary: #3d3d3d;
+	--or-text-secondary: #5a5a5a;
+	--or-text-light: #8a8a8a;
+	--or-border: #e0ddd9;
+	--or-bg: #f8f6f4;
 	--or-white: #ffffff;
-	--or-shadow-sm: 0 8px 16px rgba(15, 23, 42, 0.08);
-	--or-shadow-md: 0 14px 30px rgba(15, 23, 42, 0.1);
-	--or-shadow-lg: 0 22px 42px rgba(15, 23, 42, 0.14);
-	--or-transition: 0.25s ease-in-out;
+	--or-shadow-sm: 0 4px 8px rgba(0, 0, 0, 0.06);
+	--or-shadow-md: 0 8px 16px rgba(0, 0, 0, 0.08);
+	--or-shadow-lg: 0 12px 24px rgba(0, 0, 0, 0.1);
+	--or-transition: 0.2s ease-in-out;
 
 	min-height: calc(100vh - 72px);
-	padding: 30px 20px 40px;
-	background: radial-gradient(circle at 10% 15%, rgba(37, 99, 235, 0.11), transparent 28%),
-		radial-gradient(circle at 90% 80%, rgba(249, 115, 22, 0.13), transparent 30%), var(--or-bg);
+	padding: 24px 20px 32px;
+	background: var(--or-bg);
 	position: relative;
 	overflow: hidden;
-}
-
-.kb-container .kb-main::before,
-.kb-container .kb-main::after {
-	content: "";
-	position: absolute;
-	border-radius: 999px;
-	opacity: 0.45;
-	pointer-events: none;
-	animation: kbOrFloatBlob 8s ease-in-out infinite;
-}
-
-.kb-container .kb-main::before {
-	width: 280px;
-	height: 280px;
-	top: -85px;
-	right: -70px;
-	background: linear-gradient(135deg, rgba(37, 99, 235, 0.35), rgba(147, 197, 253, 0.2));
-}
-
-.kb-container .kb-main::after {
-	width: 240px;
-	height: 240px;
-	bottom: -95px;
-	left: -75px;
-	background: linear-gradient(135deg, rgba(249, 115, 22, 0.32), rgba(254, 215, 170, 0.2));
-	animation-delay: -4s;
 }
 
 .kb-container .kb-page-header,
@@ -65,17 +37,15 @@
 	display: flex;
 	justify-content: space-between;
 	align-items: flex-end;
-	margin-bottom: 18px;
-	animation: kbOrSlideInLeft 0.58s ease both;
+	margin-bottom: 16px;
 }
 
 .kb-container .kb-page-title-section h1 {
 	margin: 0;
 	color: var(--or-text-primary);
-	font-size: clamp(1.7rem, 1.5rem + 0.7vw, 2.2rem);
-	font-weight: 800;
-	line-height: 1.12;
-	letter-spacing: -0.03em;
+	font-size: 28px;
+	font-weight: 700;
+	line-height: 1.2;
 }
 
 .kb-container .kb-page-subtitle {
@@ -94,84 +64,78 @@
 .kb-container .kb-tabs-list {
 	display: flex;
 	align-items: center;
-	gap: 10px;
-	padding: 8px;
-	border-radius: 8px;
-	background: rgba(255, 255, 255, 0.72);
-	border: 1px solid rgba(255, 255, 255, 0.78);
-	backdrop-filter: blur(8px);
+	gap: 8px;
+	padding: 6px;
+	border-radius: 6px;
+	background: rgba(255, 255, 255, 0.9);
+	border: 1px solid var(--or-border);
 	overflow-x: auto;
 	scrollbar-width: thin;
-	animation: fadeIn 0.8s ease-in-out both;
-	animation-delay: 0.3s;
 }
 
 .kb-container .kb-tab {
-	height: 36px;
+	height: 32px;
 	padding: 0 12px;
-	border-radius: 999px;
+	border-radius: 6px;
 	border: 1px solid transparent;
 	outline: none;
 	display: inline-flex;
 	align-items: center;
-	gap: 8px;
+	gap: 6px;
 	text-decoration: none;
 	white-space: nowrap;
 	cursor: pointer;
 	color: var(--or-text-secondary);
 	font-size: 13px;
-	font-weight: 700;
-	background: rgba(255, 255, 255, 0.72);
-	transition: transform var(--or-transition), color var(--or-transition), border-color var(--or-transition), background var(--or-transition), box-shadow var(--or-transition);
+	font-weight: 600;
+	background: transparent;
+	transition: all var(--or-transition);
 }
 
 /* === REFACTOR START: active order tab style for status filter UX === */
 .kb-container .kb-tab.kb-tab--active {
-	color: var(--or-primary-dark);
-	border-color: rgba(37, 99, 235, 0.35);
-	background: rgba(219, 234, 254, 0.78);
-	box-shadow: 0 4px 14px rgba(37, 99, 235, 0.18);
+	color: var(--or-white);
+	background: var(--or-primary);
+	border-color: var(--or-primary);
+	box-shadow: var(--or-shadow-sm);
 }
 /* === REFACTOR END: active order tab style for status filter UX === */
 
 .kb-container .kb-tab:hover {
 	color: var(--or-primary-dark);
-	border-color: rgba(37, 99, 235, 0.24);
-	background: rgba(219, 234, 254, 0.55);
-	transform: translateY(-1px);
+	background: rgba(139, 111, 71, 0.1);
+	border-color: var(--or-primary);
 }
 
 .kb-container .kb-tab-badge {
 	min-width: 20px;
 	height: 20px;
 	padding: 0 6px;
-	border-radius: 999px;
+	border-radius: 4px;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
 	font-size: 11px;
-	font-weight: 700;
-	color: var(--or-primary-dark);
-	background: rgba(37, 99, 235, 0.12);
+	font-weight: 600;
+	color: var(--or-white);
+	background: var(--or-secondary);
 }
 
 .kb-container .kb-orders-empty {
 	display: block;
 	padding: 20px;
-	border-radius: 14px;
-	border: 1px dashed rgba(37, 99, 235, 0.32);
-	background: rgba(219, 234, 254, 0.42);
-	color: var(--or-primary-dark);
+	border-radius: 8px;
+	border: 1px solid var(--or-border);
+	background: rgba(255, 255, 255, 0.6);
+	color: var(--or-text-secondary);
 	font-size: 14px;
-	font-weight: 700;
+	font-weight: 600;
 	text-align: center;
-	animation: kbOrFadeIn 0.45s ease both;
 }
 
 .kb-container .kb-orders-list {
-	animation: slideInLeft 0.8s ease-in-out;
 	display: grid;
-	gap: 16px;
+	gap: 12px;
 }
 
 /* === REFACTOR START: all-orders pagination controls === */
@@ -211,27 +175,26 @@
 .kb-container .kb-order-card {
 	border-radius: 8px;
 	background: rgb(255, 255, 255);
-	border: 1px solid rgb(255, 255, 255);
-	backdrop-filter: blur(10px);
+	border: 1px solid var(--or-border);
 	overflow: hidden;
-	animation: kbOrCardEnter 0.6s ease both;
-	transition: transform var(--or-transition), box-shadow var(--or-transition), border-color var(--or-transition);
+	transition: all var(--or-transition);
+	box-shadow: var(--or-shadow-sm);
 }
 
 .kb-container .kb-order-card:hover {
-	transform: translateY(-2px);
-	box-shadow: var(--or-shadow-lg);
-	border-color: rgba(37, 99, 235, 0.26);
+	transform: translateY(-1px);
+	box-shadow: var(--or-shadow-md);
+	border-color: var(--or-primary);
 }
 
 .kb-container .kb-order-header {
-	padding: 16px 18px;
+	padding: 14px 16px;
 	display: flex;
 	justify-content: space-between;
 	align-items: flex-start;
 	gap: 12px;
 	border-bottom: 1px solid var(--or-border);
-	background: linear-gradient(135deg, rgba(37, 99, 235, 0.06), rgba(249, 115, 22, 0.06));
+	background: rgba(139, 111, 71, 0.05);
 }
 
 .kb-container .kb-order-info {
@@ -265,31 +228,31 @@
 }
 
 .kb-container .kb-status-badge {
-	height: 30px;
-	padding: 0 11px;
-	border-radius: 999px;
+	height: 28px;
+	padding: 0 10px;
+	border-radius: 4px;
 	display: inline-flex;
 	align-items: center;
 	gap: 6px;
 	font-size: 12px;
-	font-weight: 700;
-	background: rgba(37, 99, 235, 0.12);
+	font-weight: 600;
+	background: rgba(139, 111, 71, 0.15);
 	color: var(--or-primary-dark);
-	border: 1px solid rgba(37, 99, 235, 0.22);
+	border: 1px solid rgba(139, 111, 71, 0.3);
 }
 
 .kb-container .kb-order-content {
-	padding: 18px;
+	padding: 14px;
 }
 
 .kb-container .kb-order-body {
 	display: grid;
-	gap: 14px;
+	gap: 10px;
 }
 
 .kb-container .kb-items-list {
 	display: grid;
-	gap: 12px;
+	gap: 8px;
 }
 
 .kb-container .kb-order-item {
@@ -361,7 +324,7 @@
 .kb-container .kb-order-detail-overlay {
 	position: fixed;
 	inset: 0;
-	background: rgba(15, 23, 42, 0.45);
+	background: rgba(0, 0, 0, 0.3);
 	backdrop-filter: blur(2px);
 	display: flex;
 	align-items: center;
@@ -375,7 +338,7 @@
 	max-height: 92vh;
 	overflow: auto;
 	background: #ffffff;
-	border-radius: 14px;
+	border-radius: 8px;
 	border: 1px solid var(--or-border);
 	box-shadow: var(--or-shadow-lg);
 }
@@ -386,13 +349,13 @@
 	justify-content: space-between;
 	padding: 14px 16px;
 	border-bottom: 1px solid var(--or-border);
-	background: linear-gradient(135deg, rgba(37, 99, 235, 0.06), rgba(249, 115, 22, 0.06));
+	background: rgba(139, 111, 71, 0.05);
 }
 
 .kb-container .kb-order-detail-header h3 {
 	margin: 0;
 	font-size: 18px;
-	font-weight: 800;
+	font-weight: 700;
 	color: var(--or-text-primary);
 }
 
@@ -400,24 +363,24 @@
 	border: 1px solid var(--or-border);
 	background: #ffffff;
 	color: var(--or-text-secondary);
-	width: 34px;
-	height: 34px;
-	border-radius: 10px;
+	width: 32px;
+	height: 32px;
+	border-radius: 6px;
 	cursor: pointer;
-	font-weight: 800;
+	font-weight: 700;
 }
 
 .kb-container .kb-order-detail-content {
-	padding: 16px;
+	padding: 14px;
 	display: grid;
-	gap: 12px;
+	gap: 10px;
 }
 
 .kb-container .kb-order-detail-grid {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: 8px 14px;
-	font-size: 14px;
+	gap: 8px 12px;
+	font-size: 13px;
 	color: var(--or-text-secondary);
 }
 
@@ -427,29 +390,29 @@
 
 .kb-container .kb-order-detail-section {
 	border: 1px solid var(--or-border);
-	border-radius: 12px;
-	padding: 10px 12px;
-	background: #fbfdff;
+	border-radius: 6px;
+	padding: 10px;
+	background: #f8f6f4;
 }
 
 .kb-container .kb-order-detail-section h4 {
 	margin: 0 0 6px;
-	font-size: 14px;
-	font-weight: 800;
+	font-size: 13px;
+	font-weight: 700;
 	color: var(--or-text-primary);
 }
 
 .kb-container .kb-order-detail-section p {
 	margin: 0;
-	font-size: 13px;
+	font-size: 12px;
 	color: var(--or-text-secondary);
-	line-height: 1.45;
+	line-height: 1.4;
 }
 
 .kb-container .kb-order-detail-empty {
-	padding: 18px;
-	font-size: 14px;
-	font-weight: 700;
+	padding: 14px;
+	font-size: 13px;
+	font-weight: 600;
 	color: var(--or-text-secondary);
 }
 /* --- ORDER DETAIL REFACTOR END: modal styles for user order detail view --- */
@@ -459,22 +422,22 @@
 }
 
 .kb-container .kb-btn-action {
-	height: 38px;
-	padding: 0 14px;
-	border-radius: 10px;
+	height: 36px;
+	padding: 0 12px;
+	border-radius: 6px;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
 	text-decoration: none;
 	font-size: 13px;
-	font-weight: 700;
+	font-weight: 600;
 	white-space: nowrap;
 	cursor: pointer;
-	transition: transform var(--or-transition), box-shadow var(--or-transition), border-color var(--or-transition), background var(--or-transition), color var(--or-transition);
+	transition: all var(--or-transition);
 }
 
 .kb-container button.kb-btn-action {
-	border: 1px solid #0000001a;
+	border: 1px solid var(--or-border);
 }
 
 .kb-container .kb-btn-secondary {
@@ -484,40 +447,40 @@
 }
 
 .kb-container .kb-btn-secondary:hover {
-	border-color: rgba(37, 99, 235, 0.3);
+	border-color: var(--or-primary);
 	color: var(--or-primary-dark);
-	background: rgba(219, 234, 254, 0.4);
+	background: rgba(139, 111, 71, 0.08);
 	transform: translateY(-1px);
 }
 
 .kb-container .kb-btn-cancel-order {
-	background: rgba(254, 242, 242, 0.88);
-	border-color: rgba(239, 68, 68, 0.24);
+	background: rgba(255, 240, 240, 0.9);
+	border-color: rgba(220, 38, 38, 0.3);
 	color: #dc2626;
 }
 
 .kb-container .kb-btn-cancel-order:hover {
-	background: rgba(254, 226, 226, 0.92);
-	border-color: rgba(239, 68, 68, 0.38);
+	background: rgba(255, 225, 225, 0.95);
+	border-color: rgba(220, 38, 38, 0.5);
 	transform: translateY(-1px);
 }
 
 .kb-container .kb-btn-return-order {
-	background: rgba(255, 247, 237, 0.88);
-	border-color: rgba(249, 115, 22, 0.28);
+	background: rgba(250, 235, 215, 0.9);
+	border-color: rgba(160, 130, 109, 0.3);
 	color: var(--or-secondary-dark);
 }
 
 .kb-container .kb-btn-return-order:hover {
-	background: rgba(255, 237, 213, 0.9);
-	border-color: rgba(249, 115, 22, 0.42);
+	background: rgba(240, 220, 200, 0.95);
+	border-color: rgba(160, 130, 109, 0.5);
 	transform: translateY(-1px);
 }
 
 .kb-container .kb-btn-action:focus-visible,
 .kb-container .kb-tab:focus-visible {
 	outline: none;
-	box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.18);
+	box-shadow: 0 0 0 3px rgba(139, 111, 71, 0.15);
 }
 
 @media (max-width: 1024px) {

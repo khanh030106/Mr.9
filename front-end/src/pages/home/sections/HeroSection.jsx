@@ -3,17 +3,17 @@ import {Link} from "react-router-dom";
 const HeroSection = () => {
     return (
         <div className="hero-content">
-            <p className="hero-kicker">Bookly curated picks</p>
+            <p className="hero-kicker">Những lựa chọn được tuyển chọn bởi Bookly</p>
             <h1>
-                Find Your Next Favorite Book
+                Tìm Cuốn Sách Yêu Thích Tiếp Theo Của Bạn
                 <br/>
-                In One Cozy Place
+                Tại Một Nơi Ấm Áp
             </h1>
             <p className="hero-description">
-                Discover best sellers, timeless classics, and fresh releases with gentle prices and fast delivery.
+                Khám phá những cuốn sách bán chạy nhất, những tác phẩm kinh điển vượt thời gian, và những bản phát hành mới với giá cả phải chăng và giao hàng nhanh chóng.
             </p>
             <Link to="/bookseller/home/morebook?type=activeBooks" className="hero-cta">
-                Discover Now
+                Khám Phá Ngay
             </Link>
         </div>
     );

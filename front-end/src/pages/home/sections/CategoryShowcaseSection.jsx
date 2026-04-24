@@ -3,29 +3,29 @@ import {Link} from "react-router-dom";
 const categoryTiles = [
     {
         key: "literature",
-        title: "Literature",
-        subtitle: "Best books by literature.",
+        title: "Văn Học",
+        subtitle: "Những cuốn sách hay nhất về văn học.",
         link: "/bookseller/home/",
         className: "category-tile--literature",
     },
     {
         key: "business",
-        title: "Business",
-        subtitle: "Leadership, strategy, and practical growth.",
+        title: "Kinh Doanh",
+        subtitle: "Lãnh đạo, chiến lược và phát triển thực tế.",
         link: "/bookseller/home/",
         className: "category-tile--business",
     },
     {
         key: "psychology",
-        title: "Psychology",
-        subtitle: "Habits, mindset, and personal development.",
+        title: "Tâm Lý Học",
+        subtitle: "Thói quen, tư duy và phát triển cá nhân.",
         link: "/bookseller/home/",
         className: "category-tile--growth",
     },
     {
         key: "kids",
-        title: "Kids & Family",
-        subtitle: "Joyful reading for young curious minds.",
+        title: "Trẻ Em & Gia Đình",
+        subtitle: "Đọc sách vui vẻ cho những tâm hồn tò mò trẻ tuổi.",
         link: "/bookseller/home/",
         className: "category-tile--kids",
     },
@@ -33,23 +33,25 @@ const categoryTiles = [
 
 const CategoryShowcaseSection = () => {
     return (
-        <section className="category-showcase" aria-label="Category showcase">
+        <section className="category-showcase" aria-label="Trưng bày danh mục">
             <div className="title-block">
-                <h3>Explore by Category</h3>
-                <p>Pick a vibe and jump into collections curated for every type of reader.</p>
+                <h3>Khám phá theo danh mục</h3>
+                <p>Chọn một phong cách và nhảy vào các bộ sưu tập được tuyển chọn cho mọi loại độc giả.</p>
             </div>
 
-            <div className="category-showcase__grid">
+            <ul className="category-showcase__list" style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '20px', padding: 0 }}>
                 {categoryTiles.map((tile) => (
-                    <Link key={tile.key} to={tile.link} className={`category-tile ${tile.className}`}>
-                        <span className="category-tile__overlay" aria-hidden="true"></span>
-                        <span className="category-tile__content">
-                            <span className="category-tile__title">{tile.title}</span>
-                            <span className="category-tile__subtitle">{tile.subtitle}</span>
-                        </span>
-                    </Link>
+                    <li key={tile.key}>
+                        <Link to={tile.link} className={`category-tile ${tile.className}`}>
+                            <span className="category-tile__overlay" aria-hidden="true"></span>
+                            <span className="category-tile__content">
+                                <span className="category-tile__title">{tile.title}</span>
+                                <span className="category-tile__subtitle">{tile.subtitle}</span>
+                            </span>
+                        </Link>
+                    </li>
                 ))}
-            </div>
+            </ul>
         </section>
     );
 };
