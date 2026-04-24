@@ -33,7 +33,6 @@ public class OrdersController {
 		this.ordersService = ordersService;
 	}
 
-	// === REFACTOR START: current user orders endpoint for customer order tabs ===
 	@GetMapping("/me")
 	public ResponseEntity<OrderListResponse> getMyOrders(@AuthenticationPrincipal UserDetails userDetails) {
 		return ResponseEntity.ok(ordersService.getMyOrders(userDetails.getUsername()));
@@ -86,7 +85,6 @@ public class OrdersController {
 		return ResponseEntity.ok(ordersService.getAdminOrderDetail(orderId));
 	}
 
-	// --- ADMIN REVENUE START: endpoint backing admin revenue dashboard ---
 	@GetMapping("/admin/revenue")
 	public ResponseEntity<AdminRevenueOverviewResponse> getAdminRevenueOverview(
 			@AuthenticationPrincipal UserDetails userDetails,
@@ -98,9 +96,7 @@ public class OrdersController {
 		assertAdmin(userDetails);
 		return ResponseEntity.ok(ordersService.getAdminRevenueOverview(year, month, page, size));
 	}
-	// --- ADMIN REVENUE END: endpoint backing admin revenue dashboard ---
 
-	// --- ADMIN TOP CUSTOMER START: endpoint backing admin top-customer dashboard ---
 	@GetMapping("/admin/top-customers")
 	public ResponseEntity<AdminTopCustomerResponse> getAdminTopCustomers(
 			@AuthenticationPrincipal UserDetails userDetails,
@@ -112,7 +108,6 @@ public class OrdersController {
 		assertAdmin(userDetails);
 		return ResponseEntity.ok(ordersService.getAdminTopCustomers(period, keyword, page, size));
 	}
-	// --- ADMIN TOP CUSTOMER END: endpoint backing admin top-customer dashboard ---
 
 	@PatchMapping("/admin/{orderId}/status")
 	public ResponseEntity<AdminOrderDetailResponse> updateAdminOrderStatus(
@@ -163,7 +158,6 @@ public class OrdersController {
 		assertAdmin(userDetails);
 		return ResponseEntity.ok(ordersService.refuseReturnRequest(orderId, request));
 	}
-	// === REFACTOR END: current user orders endpoint for customer order tabs ===
 
 	private void assertAdmin(UserDetails userDetails) {
 		if (userDetails == null) {

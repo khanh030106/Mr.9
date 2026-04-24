@@ -23,7 +23,6 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/api/admin/categories")
 public class AdminCategoryManagementController {
-    // --- ADMIN CATEGORY MANAGEMENT START: REST endpoints for admin category CRUD/list/search ---
     private final AdminCategoryManagementService adminCategoryManagementService;
 
     public AdminCategoryManagementController(AdminCategoryManagementService adminCategoryManagementService) {
@@ -66,5 +65,4 @@ public class AdminCategoryManagementController {
     public ResponseEntity<AdminCategoryOptionsResponse> getCategoryOptions() {
         return ResponseEntity.ok(adminCategoryManagementService.getCategoryOptions());
     }
-    // --- ADMIN CATEGORY MANAGEMENT END: REST endpoints for admin category CRUD/list/search ---
 }

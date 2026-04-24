@@ -25,7 +25,6 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/api/admin/users")
 public class AdminUserManagementController {
-    // --- ADMIN USER MANAGEMENT START: REST endpoints for admin user management ---
     private final AdminUserManagementService adminUserManagementService;
 
     public AdminUserManagementController(AdminUserManagementService adminUserManagementService) {

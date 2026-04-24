@@ -18,7 +18,6 @@ import com.example.backend.dto.requests.CreateCheckoutSessionRequest;
 import com.example.backend.dto.responseModel.CreateCheckoutSessionResponse;
 import com.example.backend.services.VnpayService;
 
-// --- VNPAY REFACTOR START: payment controller exposes VNPay checkout link + return callback endpoint ---
 @RestController
 @RequestMapping("/api/payment")
 public class PaymentController {
@@ -47,4 +46,4 @@ public class PaymentController {
                 .build();
     }
 }
-// --- VNPAY REFACTOR END: payment controller exposes VNPay checkout link + return callback endpoint ---
+

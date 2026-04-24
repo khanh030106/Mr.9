@@ -7,7 +7,6 @@ import {getActiveBookAuthors, getActiveBooksPage, getAllCategories} from "../../
 const ITEMS_PER_PAGE = 16;
 
 const AllBooksPage =() =>{
-    // --- ALL BOOKS REFACTOR START: load active books and render ProductCard in existing grid container ---
     const [pageIndex, setPageIndex] = useState(0);
     const [totalPages, setTotalPages] = useState(1);
     const [books, setBooks] = useState([]);

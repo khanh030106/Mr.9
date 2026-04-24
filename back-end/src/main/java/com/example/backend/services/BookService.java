@@ -54,7 +54,6 @@ public class BookService {
         return bookRepository.findAllBooksActive(page);
     }
 
-    // --- ALL BOOKS REFACTOR START: paginated active books for all-books page (4 items x 4 rows) ---
     public Page<BookInfo> findAllBooksActive(int page, int size) {
         int safePage = Math.max(0, page);
         int safeSize = Math.max(1, Math.min(40, size));
@@ -76,7 +75,6 @@ public class BookService {
         java.math.BigDecimal minPrice = null;
         java.math.BigDecimal maxPrice = null;
 
-        // Reuse fixed price buckets from UI so filters can be used individually or combined.
         if (priceRange != null && !priceRange.isBlank()) {
             switch (priceRange.trim()) {
                 case "0-100000" -> {
@@ -101,7 +99,6 @@ public class BookService {
     public List<FilterOptionInfo> findAllActiveAuthors() {
         return bookRepository.findAllActiveAuthors();
     }
-    // --- ALL BOOKS REFACTOR END: paginated active books for all-books page (4 items x 4 rows) ---
 
     public Optional<BookInfo> findBookById(Long id) {
         return bookRepository.findBookById(id);
@@ -112,7 +109,6 @@ public class BookService {
         return bookRepository.findRelateBook(id, pageable);
     }
 
-    // --- SEARCH REFACTOR START: service for header autocomplete suggestions ---
     public List<BookInfo> findSearchSuggestions(String keyword, int limit) {
         if (keyword == null || keyword.isBlank()) {
             return List.of();
@@ -122,9 +118,7 @@ public class BookService {
         Pageable pageable = PageRequest.of(0, safeLimit);
         return bookRepository.findSearchSuggestions(keyword.trim(), pageable);
     }
-    // --- SEARCH REFACTOR END: service for header autocomplete suggestions ---
 
-    // --- REVIEW REFACTOR START: service for loading reviews in detail tab ---
     public List<BookReviewInfo> findBookReviews(Long id, int limit) {
         int safeLimit = Math.max(1, Math.min(50, limit));
         Pageable pageable = PageRequest.of(0, safeLimit);
@@ -177,6 +171,4 @@ public class BookService {
         reviewRepository.save(review);
         return reviewId;
     }
-    // --- REVIEW REFACTOR END: service for loading reviews in detail tab ---
-
 }

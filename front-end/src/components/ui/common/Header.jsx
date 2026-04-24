@@ -33,7 +33,6 @@ const Header = () => {
 
 
     useEffect(() => {
-        // --- BEGIN FIX: tránh unhandled rejection khi API category lỗi — revert: gọi getAllCategories() không try/catch ---
         const fetchCategory = async () => {
             try {
                 const data = await getAllCategories();
@@ -57,7 +56,6 @@ const Header = () => {
         }
     }
 
-    // --- SEARCH REFACTOR START: live search dropdown + submit behavior ---
     const closeSuggestions = () => {
         setIsSuggestionOpen(false);
     };

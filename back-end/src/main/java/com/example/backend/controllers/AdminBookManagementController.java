@@ -23,7 +23,7 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/api/admin/books")
 public class AdminBookManagementController {
-    // --- ADMIN BOOK MANAGEMENT START: REST endpoints for admin book CRUD/list/filter ---
+
     private final AdminBookManagementService adminBookManagementService;
 
     public AdminBookManagementController(AdminBookManagementService adminBookManagementService) {
@@ -68,5 +68,5 @@ public class AdminBookManagementController {
     public ResponseEntity<AdminBookOptionsResponse> getBookOptions() {
         return ResponseEntity.ok(adminBookManagementService.getFormOptions());
     }
-    // --- ADMIN BOOK MANAGEMENT END: REST endpoints for admin book CRUD/list/filter ---
+
 }

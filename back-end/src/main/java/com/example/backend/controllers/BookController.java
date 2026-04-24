@@ -32,7 +32,6 @@ public class BookController {
         this.bookService = bookService;
     }
 
-    // --- SEARCH REFACTOR START: endpoint for header autocomplete ---
     @GetMapping("/search")
     public ResponseEntity<List<BookInfo>> searchSuggestions(
             @RequestParam(name = "q", defaultValue = "") String keyword,
@@ -40,9 +39,6 @@ public class BookController {
     ) {
         return ResponseEntity.ok(bookService.findSearchSuggestions(keyword, limit));
     }
-    // --- SEARCH REFACTOR END: endpoint for header autocomplete ---
-
-    // --- ALL BOOKS REFACTOR START: endpoint for paginated active books listing ---
     @GetMapping("/active")
     public ResponseEntity<Page<BookInfo>> getActiveBooks(
             @RequestParam(name = "page", defaultValue = "0") int page,
@@ -58,7 +54,6 @@ public class BookController {
     public ResponseEntity<List<FilterOptionInfo>> getActiveAuthors() {
         return ResponseEntity.ok(bookService.findAllActiveAuthors());
     }
-    // --- ALL BOOKS REFACTOR END: endpoint for paginated active books listing ---
 
     @GetMapping("/{id}")
     public ResponseEntity<BookInfo> getDetailBook(@PathVariable Long id){
@@ -72,7 +67,6 @@ public class BookController {
         return ResponseEntity.ok(bookService.findRelateBook(id));
     }
 
-    // --- REVIEW REFACTOR START: endpoint for detail page review tab ---
     @GetMapping("/{id}/reviews")
     public ResponseEntity<List<BookReviewInfo>> getBookReviews(
             @PathVariable Long id,
@@ -97,6 +91,5 @@ public class BookController {
         body.put("message", "Review created successfully");
         return ResponseEntity.status(HttpStatus.CREATED).body(body);
     }
-    // --- REVIEW REFACTOR END: endpoint for detail page review tab ---
 
 }

@@ -71,7 +71,6 @@ const RevenueManagementPage = () => {
     useEffect(() => {
         let isMounted = true;
 
-        // --- ADMIN REVENUE START: fetch real dashboard data from backend API ---
         const fetchRevenue = async () => {
             setIsLoading(true);
             setErrorMessage("");

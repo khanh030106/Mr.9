@@ -77,7 +77,6 @@ public class User {
     @ColumnDefault("NULL")
     @Column(name = "preferredpaymentmethod", length = 50)
     private String preferredPaymentMethod;
-    // --- CHECKOUT REFACTOR END: persist last selected payment method for checkout prefill ---
 
     @OneToMany(mappedBy = "userID", fetch = FetchType.EAGER)
     private Set<Userrole> userRoles = new LinkedHashSet<>();

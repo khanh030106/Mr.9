@@ -33,16 +33,13 @@ import com.example.backend.repositories.PaymentRepository;
 import com.example.backend.repositories.UserAddressRepository;
 import com.example.backend.repositories.UserRepository;
 
-// --- VNPAY REFACTOR START: checkout service creates order first, then VNPay handles online payment ---
 @Service
 public class OrderCheckoutService {
 
-    // --- VNPAY REFACTOR START: centralize final order/payment method values saved in DB ---
     private static final String STATUS_PENDING = "PENDING";
     private static final String STATUS_PROCESSING = "PROCESSING";
     private static final String PAYMENT_METHOD_COD = "COD";
     private static final String PAYMENT_METHOD_VNPAY = "VNPAY";
-    // --- VNPAY REFACTOR END: centralize final order/payment method values saved in DB ---
 
     private final UserRepository userRepository;
     private final UserAddressRepository userAddressRepository;
@@ -135,10 +132,8 @@ public class OrderCheckoutService {
             lineItems.add(orderItem);
         }
 
-        // --- VNPAY REFACTOR START: COD goes straight to processing, online payment stays pending until VNPay return success ---
         order.setTotalAmount(totalAmount);
         order.setCurrentStatus(isOnlineCheckout ? STATUS_PENDING : STATUS_PROCESSING);
-        // --- VNPAY REFACTOR END: COD goes straight to processing, online payment stays pending until VNPay return success ---
 
         ordersRepository.save(order);
         orderItemRepository.saveAll(lineItems);
@@ -202,4 +197,4 @@ public class OrderCheckoutService {
         return normalized;
     }
 }
-// --- VNPAY REFACTOR END: checkout service creates order first, then VNPay handles online payment ---
+

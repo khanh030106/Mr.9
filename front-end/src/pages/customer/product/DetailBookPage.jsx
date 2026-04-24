@@ -27,17 +27,13 @@ export const DetailBookPage = () => {
     const { user } = useContext(AuthContext);
     const { refreshCart } = useCart();
     const [quantity, setQuantity] = useState(1);
-    // --- REFACTOR START: controlled tabs for reliable review switching ---
     const [activeTab, setActiveTab] = useState("same-cate");
-    // --- REFACTOR END: controlled tabs for reliable review switching ---
     const relatedTrackRef = useRef(null);
     const isInvalidId = !id || Number.isNaN(Number(id));
     const CHECKOUT_INTENT_STORAGE_KEY = "checkout_intent";
-    // --- REVIEW COMMENT REFACTOR START: controlled review form state for login-gated feedback submit ---
     const [reviewComment, setReviewComment] = useState("");
     const [reviewRating, setReviewRating] = useState(5);
     const [isSubmittingReview, setIsSubmittingReview] = useState(false);
-    // --- REVIEW COMMENT REFACTOR END: controlled review form state for login-gated feedback submit ---
 
     //--------------------------------REACT QUERY DETAIL BOOK-----------------------------
     const detailQuery = useQuery({
@@ -53,16 +49,13 @@ export const DetailBookPage = () => {
         enabled: !isInvalidId
     })
 
-    // --- REVIEW REFACTOR START: fetch reviews for current book in review tab ---
     const reviewsQuery = useQuery({
         queryKey: ["book-reviews", id],
         queryFn: ({signal}) => getBookReviews(id, 20, signal),
         enabled: !isInvalidId
     });
-    // --- REVIEW REFACTOR END: fetch reviews for current book in review tab ---
 
     const detailBook = detailQuery.data?.data ?? detailQuery.data;
-    // --- BEGIN FIX: đồng bộ hết hàng với ProductCard (inStock + quantity) — revert: xóa detailBook/stock/isOutOfStock/useEffect + chỉnh handler/UI ---
     const stockQtyRaw = detailBook?.quantity;
     const stockQtyNum = stockQtyRaw != null ? Number(stockQtyRaw) : NaN;
     const isOutOfStock =
@@ -77,9 +70,7 @@ export const DetailBookPage = () => {
             return Math.min(Math.max(1, q), max);
         });
     }, [detailBook?.id, stockQtyNum]);
-    // --- END FIX: hết hàng chi tiết ---
 
-    // --- REFACTOR START: use toast feedback for detail add-to-cart (match home UX) ---
     //----------------------------------HANDLE ADD BOOK TO CART---------------------------------
     const addBookToCart = async (bookId, qty = 1) => {
         try {
@@ -102,30 +93,24 @@ export const DetailBookPage = () => {
     };
 //---------------------------------------------------------------
     const handleAddToCart = async () => {
-        // --- BEGIN FIX: không cho thêm khi hết hàng — revert: chỉ gọi addBookToCart ---
         if (isOutOfStock || quantity < 1 || !detailBook?.id) {
             toast.error("Sản phẩm đã hết hàng, không thể thêm vào giỏ.");
             return;
         }
-        // --- END FIX ---
         await addBookToCart(detailBook.id, quantity);
     };
 
     //----------------------------HANDLE ADD RELATED BOOKS TO CART------------------------
     const handleRelatedAddToCart = async (item) => {
-        // --- BEGIN FIX: cùng rule với ProductCard khi dùng onAddToCart — revert: chỉ addBookToCart ---
         const q = item?.quantity != null ? Number(item.quantity) : NaN;
         const relatedOos = Number.isFinite(q) ? q <= 0 : item?.inStock === false;
         if (relatedOos) {
             toast.error("Sản phẩm đã hết hàng.");
             return;
         }
-        // --- END FIX ---
         await addBookToCart(item.id, 1);
     };
-    // --- REFACTOR END: use toast feedback for detail add-to-cart (match home UX) ---
 
-    // --- REVIEW COMMENT REFACTOR START: only logged-in users can submit review, otherwise redirect to login ---
     const handleSubmitReview = async (event) => {
         event.preventDefault();
 
@@ -171,9 +156,7 @@ export const DetailBookPage = () => {
             setIsSubmittingReview(false);
         }
     };
-    // --- REVIEW COMMENT REFACTOR END: only logged-in users can submit review, otherwise redirect to login ---
 
-    // --- CHECKOUT REFACTOR START: Buy Now passes selected item to checkout ---
     const handleBuyNow = () => {
         if (isOutOfStock || quantity < 1 || !detailBook?.id) {
             toast.error("Sản phẩm đã hết hàng, không thể mua ngay.");
@@ -196,7 +179,6 @@ export const DetailBookPage = () => {
         sessionStorage.setItem(CHECKOUT_INTENT_STORAGE_KEY, JSON.stringify(checkoutIntent));
         navigate("/bookseller/checkout", { state: { checkoutIntent } });
     };
-    // --- CHECKOUT REFACTOR END: Buy Now passes selected item to checkout ---
 
     const scrollRelated = (direction) => {
         if (!relatedTrackRef.current) {

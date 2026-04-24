@@ -489,5 +489,5 @@ public class AdminBookManagementService {
                 .replaceAll("-+$", "");
         return cleaned.isBlank() ? "book" : cleaned;
     }
-    // --- ADMIN BOOK MANAGEMENT END: service layer for admin book CRUD/filter APIs ---
+
 }

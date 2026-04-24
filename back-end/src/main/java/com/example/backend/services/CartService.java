@@ -212,9 +212,7 @@ public class CartService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Sản phẩm không có trong giỏ");
         }
         Cartitem item = existing.get();
-        // --- BEGIN FIX: không cho tăng SL vượt tồn — revert: xóa assertWithinStock ---
         assertWithinStock(book, quantity);
-        // --- END FIX ---
         item.setQuantity(quantity);
         cartItemRepository.save(item);
     }

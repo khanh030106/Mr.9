@@ -57,7 +57,6 @@ const CheckoutPage = () => {
     const [isSavingAddress, setIsSavingAddress] = useState(false);
     const [isSubmittingOrder, setIsSubmittingOrder] = useState(false);
 
-    // --- CHECKOUT REFACTOR START: hydrate checkout items from intent/state/cart fallback ---
     useEffect(() => {
         const stateIntent = location.state?.checkoutIntent;
         if (stateIntent) {
@@ -99,9 +98,7 @@ const CheckoutPage = () => {
             .filter(Boolean);
         setCheckoutItems(fromCart);
     }, [location.state, cartItems]);
-    // --- CHECKOUT REFACTOR END: hydrate checkout items from intent/state/cart fallback ---
 
-    // --- CHECKOUT REFACTOR START: preload persisted checkout profile for current user ---
     useEffect(() => {
         const loadProfile = async () => {
             setIsLoadingProfile(true);
@@ -136,7 +133,6 @@ const CheckoutPage = () => {
 
         loadProfile();
     }, [user?.fullName, user?.phone]);
-    // --- CHECKOUT REFACTOR END: preload persisted checkout profile for current user ---
 
     const subtotal = useMemo(() => {
         return checkoutItems.reduce((sum, item) => sum + item.finalPrice * item.quantity, 0);
@@ -155,12 +151,11 @@ const CheckoutPage = () => {
             return;
         }
 
-        // --- CHECKOUT REFACTOR START: popup opens only by explicit Add new address click ---
         if (addresses.length === 0 && !showAddressModal) {
             toast.error("Ban chua co dia chi. Vui long click Add new address de them dia chi.");
             return;
         }
-        // --- CHECKOUT REFACTOR END: popup opens only by explicit Add new address click ---
+
 
         setIsSavingContact(true);
         try {
@@ -170,7 +165,7 @@ const CheckoutPage = () => {
                 preferredPaymentMethod: paymentMethod
             };
 
-            // --- CHECKOUT REFACTOR START: if user has no address yet, include modal address in contact save ---
+
             if (addresses.length === 0) {
                 if (!addressForm.addressLine.trim() || !addressForm.ward.trim() || !addressForm.district.trim() || !addressForm.province.trim()) {
                     toast.error("Vui long nhap day du dia chi trong popup.");
@@ -198,7 +193,6 @@ const CheckoutPage = () => {
                 }
                 setShowAddressModal(false);
             }
-            // --- CHECKOUT REFACTOR END: if user has no address yet, include modal address in contact save ---
 
             toast.success("Da luu thong tin lien he.");
         } catch (error) {
@@ -209,7 +203,6 @@ const CheckoutPage = () => {
         }
     };
 
-    // --- CHECKOUT REFACTOR START: centralized modal close behavior for button/backdrop/keyboard ---
     const closeAddressModal = () => {
         setShowAddressModal(false);
     };
@@ -232,7 +225,6 @@ const CheckoutPage = () => {
             document.body.style.overflow = previousOverflow;
         };
     }, [showAddressModal]);
-    // --- CHECKOUT REFACTOR END: centralized modal close behavior for button/backdrop/keyboard ---
 
     const openAddressModal = () => {
         setAddressForm({
@@ -307,7 +299,6 @@ const CheckoutPage = () => {
             return;
         }
 
-        // --- VNPAY REFACTOR START: persist profile, create order, then branch COD vs VNPay ---
         setIsSubmittingOrder(true);
         try {
             await saveCheckoutProfile({
@@ -355,7 +346,6 @@ const CheckoutPage = () => {
         } finally {
             setIsSubmittingOrder(false);
         }
-        // --- VNPAY REFACTOR END: persist profile, create order, then branch COD vs VNPay ---
     };
 
     return (
