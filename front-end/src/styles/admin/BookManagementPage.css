@@ -397,6 +397,11 @@
 	font-size: 0.95rem;
 	font-weight: 700;
 	color: var(--kb-text);
+	display: block;
+	max-width: 280px;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
 }
 
 .kb-inv-book-isbn,
@@ -539,6 +544,131 @@
 	to {
 		opacity: 1;
 		transform: translateX(0);
+	}
+}
+
+/* Admin visual refresh */
+.kb-inv-main {
+	--kb-primary: #14b8a6;
+	--kb-primary-dark: #0f766e;
+	--kb-primary-soft: rgba(20, 184, 166, 0.16);
+	--kb-secondary: #fb7185;
+	--kb-secondary-dark: #e11d48;
+	--kb-text: #e8eefc;
+	--kb-text-soft: #9fb1d2;
+	--kb-border: rgba(148, 163, 184, 0.28);
+	--kb-surface: rgba(13, 23, 42, 0.84);
+	--kb-bg: #070d19;
+	--kb-shadow-sm: 0 14px 30px rgba(2, 6, 23, 0.42);
+	--kb-shadow-md: 0 24px 48px rgba(2, 6, 23, 0.52);
+	padding: 28px;
+	background: radial-gradient(circle at 15% 12%, rgba(20, 184, 166, 0.24), transparent 34%),
+		radial-gradient(circle at 86% 86%, rgba(251, 113, 133, 0.22), transparent 36%),
+		linear-gradient(150deg, #070d19 0%, #0f1b33 54%, #162540 100%);
+}
+
+.kb-inv-page-header,
+.kb-inv-modal-card,
+.kb-inv-table-card,
+.kb-inv-filters,
+.kb-inv-modal-overlay {
+	border-radius: 18px;
+	border: 1px solid var(--kb-border);
+	box-shadow: var(--kb-shadow-sm);
+	backdrop-filter: blur(8px);
+}
+
+.kb-inv-th {
+	background: #16223d;
+	color: #c9d7f2;
+	border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.kb-inv-td {
+	border-bottom: 1px solid rgba(148, 163, 184, 0.16);
+}
+
+.kb-inv-form-input,
+.kb-inv-search-input,
+.kb-inv-select {
+	background: #0c172c;
+	border-color: rgba(148, 163, 184, 0.3);
+	color: #dfe9fb;
+}
+
+.kb-inv-form-input:focus,
+.kb-inv-search-input:focus,
+.kb-inv-select:focus {
+	border-color: rgba(20, 184, 166, 0.8);
+	box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.2);
+	background: #10213c;
+}
+
+.kb-inv-table-row:hover {
+	background: linear-gradient(90deg, rgba(20, 184, 166, 0.14), rgba(251, 113, 133, 0.12));
+}
+
+.kb-inv-btn-primary {
+	background: linear-gradient(135deg, var(--kb-primary), var(--kb-secondary));
+}
+
+/* Admin layout refresh */
+.kb-inv-content {
+	display: grid;
+	grid-template-columns: minmax(280px, 0.38fr) minmax(0, 1fr);
+	gap: 16px;
+	align-items: start;
+}
+
+.kb-inv-page-header,
+.kb-inv-alert,
+.kb-inv-modal-overlay {
+	grid-column: 1 / -1;
+}
+
+.kb-inv-filters {
+	grid-column: 1;
+	grid-row: 3;
+	position: sticky;
+	top: 16px;
+	display: flex;
+	flex-direction: column;
+	grid-template-columns: 1fr;
+}
+
+.kb-inv-filter-actions {
+	justify-content: stretch;
+	flex-direction: column;
+}
+
+.kb-inv-filter-actions > * {
+	width: 100%;
+}
+
+.kb-inv-table-card {
+	grid-column: 3;
+	grid-row: 3;
+}
+
+@media (max-width: 1100px) {
+	.kb-inv-content {
+		grid-template-columns: 1fr;
+	}
+
+	.kb-inv-filters,
+	.kb-inv-table-card {
+		grid-column: 1;
+		grid-row: auto;
+		position: static;
+	}
+
+	.kb-inv-filter-actions {
+		flex-direction: row;
+		justify-content: flex-start;
+	}
+
+	.kb-inv-filter-actions > * {
+		width: auto;
 	}
 }
 

@@ -458,4 +458,95 @@
 	}
 }
 
+/* Admin visual refresh */
+.kb-cm-main {
+	--kb-cm-primary: #14b8a6;
+	--kb-cm-primary-dark: #0f766e;
+	--kb-cm-primary-soft: rgba(20, 184, 166, 0.16);
+	--kb-cm-secondary: #fb7185;
+	--kb-cm-secondary-dark: #e11d48;
+	--kb-cm-text: #e8eefc;
+	--kb-cm-text-soft: #9fb1d2;
+	--kb-cm-border: rgba(148, 163, 184, 0.28);
+	--kb-cm-surface: rgba(13, 23, 42, 0.84);
+	--kb-cm-bg: #070d19;
+	--kb-cm-shadow-sm: 0 14px 30px rgba(2, 6, 23, 0.42);
+	--kb-cm-shadow-md: 0 24px 48px rgba(2, 6, 23, 0.52);
+	padding: 28px;
+	background: radial-gradient(circle at 16% 10%, rgba(20, 184, 166, 0.24), transparent 34%),
+		radial-gradient(circle at 84% 84%, rgba(251, 113, 133, 0.22), transparent 36%),
+		linear-gradient(150deg, #070d19 0%, #0f1b33 54%, #162540 100%);
+}
+
+.kb-cm-page-heading,
+.kb-cm-form-card,
+.kb-cm-table-card {
+	border-radius: 18px;
+	border: 1px solid var(--kb-cm-border);
+	box-shadow: var(--kb-cm-shadow-sm);
+	backdrop-filter: blur(8px);
+}
+
+.kb-cm-th {
+	background: #16223d;
+	color: #c9d7f2;
+	border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.kb-cm-td {
+	border-bottom: 1px solid rgba(148, 163, 184, 0.16);
+}
+
+.kb-cm-form-input {
+	background: #0c172c;
+	border-color: rgba(148, 163, 184, 0.3);
+	color: #dfe9fb;
+}
+
+.kb-cm-form-input:focus {
+	border-color: rgba(20, 184, 166, 0.8);
+	box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.2);
+	background: #10213c;
+}
+
+.kb-cm-table-row:hover {
+	background: linear-gradient(90deg, rgba(20, 184, 166, 0.14), rgba(251, 113, 133, 0.12));
+}
+
+.kb-cm-add-button {
+	background: linear-gradient(135deg, var(--kb-cm-primary), var(--kb-cm-secondary));
+}
+
+/* Admin layout refresh */
+.kb-cm-content {
+	display: grid;
+	grid-template-columns: minmax(320px, 0.42fr) minmax(0, 1fr);
+	gap: 16px;
+	align-items: start;
+}
+
+.kb-cm-alert,
+.kb-cm-table-card {
+	grid-column: 1 / -1;
+}
+
+.kb-cm-form-card {
+	position: sticky;
+	top: 16px;
+}
+
+.kb-cm-table {
+	min-width: 640px;
+}
+
+@media (max-width: 1040px) {
+	.kb-cm-content {
+		grid-template-columns: 1fr;
+	}
+
+	.kb-cm-form-card {
+		position: static;
+	}
+}
+
 
