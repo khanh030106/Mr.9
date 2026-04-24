@@ -47,7 +47,7 @@ const DashboardPage = () => {
             <div className="dashboard-shell">
                 <header className="dashboard-header">
                     <p className="dashboard-kicker">Admin Dashboard</p>
-                    <h1>Welcome back to KBOOKs management</h1>
+                    <h1>Welcome back to QBOOK management</h1>
                     <p className="dashboard-subtitle">
                         Everything you need to manage operations, monitor business performance,
                         and keep the store running smoothly.

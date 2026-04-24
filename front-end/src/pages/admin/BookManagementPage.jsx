@@ -264,6 +264,7 @@ const BookManagementPage = () => {
                                 <span>Add New Book</span>
                             </button>
                         </div>
+                    
 
                     {isModalOpen ? (
                     <div className="kb-inv-modal-overlay">
